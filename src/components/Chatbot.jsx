@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -12,12 +11,20 @@ const Chatbot = () => {
     { id: 1, text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?", sender: "bot" }
   ]);
   const [inputValue, setInputValue] = useState("");
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
   const messagesEndRef = useRef(null);
 
   const toggleChatbot = () => setIsOpen(!isOpen);
 
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    setIsUserScrolling(scrollTop + clientHeight < scrollHeight - 10);
+  };
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!isUserScrolling) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   useEffect(() => {
@@ -52,7 +59,6 @@ const Chatbot = () => {
     }
   };
   
-
   return (
     <>
       <motion.div
@@ -90,8 +96,10 @@ const Chatbot = () => {
                 <X className="h-5 w-5" />
               </Button>
             </header>
-
-            <ScrollArea className="flex-grow p-4">
+            <ScrollArea
+              className="flex-grow p-4"
+              onScroll={handleScroll}
+              style={{ maxHeight: "calc(70vh - 100px)", overflowY: "auto" }}>
               <div className="space-y-4">
                 {messages.map((msg) => (
                   <motion.div
@@ -145,3 +153,4 @@ const Chatbot = () => {
 };
 
 export default Chatbot;
+ 
