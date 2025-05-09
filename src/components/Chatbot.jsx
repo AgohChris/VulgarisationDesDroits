@@ -12,9 +12,17 @@ const Chatbot = () => {
     { id: 1, text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?", sender: "bot" }
   ]);
   const [inputValue, setInputValue] = useState("");
-  const scrollAreaRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const toggleChatbot = () => setIsOpen(!isOpen);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -44,15 +52,6 @@ const Chatbot = () => {
     }
   };
   
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollViewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollViewport) {
-        scrollViewport.scrollTop = scrollViewport.scrollHeight;
-      }
-    }
-  }, [messages]);
-
 
   return (
     <>
@@ -92,7 +91,7 @@ const Chatbot = () => {
               </Button>
             </header>
 
-            <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+            <ScrollArea className="flex-grow p-4">
               <div className="space-y-4">
                 {messages.map((msg) => (
                   <motion.div
@@ -113,6 +112,7 @@ const Chatbot = () => {
                     </div>
                   </motion.div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
 
