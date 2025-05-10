@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Send, X, Bot } from "lucide-react";
-import axios from "axios"; // Importer Axios pour les requêtes HTTP
+import axios from "axios";
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +13,7 @@ const Chatbot = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const [sessionId, setSessionId] = useState(null); // ID de session
   const messagesEndRef = useRef(null);
 
   const toggleChatbot = () => setIsOpen(!isOpen);
@@ -43,7 +44,13 @@ const Chatbot = () => {
       // Appeler l'API backend pour obtenir une réponse
       const response = await axios.post("http://127.0.0.1:8000/api/chatbot/", {
         message: inputValue,
+        session_id: sessionId, // Inclure l'ID de session
       });
+
+      // Mettre à jour l'ID de session si nécessaire
+      if (!sessionId) {
+        setSessionId(response.data.session_id);
+      }
 
       const botResponse = {
         id: messages.length + 2,
