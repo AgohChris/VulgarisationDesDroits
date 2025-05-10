@@ -12,10 +12,14 @@ from .models import ChatSession, MessageChat
 class ChatBotAPIVIEW(APIView):
     def post(self, request):
         message_utilsateur = request.data.get('message', '')
-        session_id = request.data.get('session_id', str(uuid.uuid4()))
+        session_id = request.data.get('session_id', None)
 
         if not message_utilsateur:
             return Response({"error": "Message requis"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Pour génerer un nouvel_id
+        if not session_id:
+            session_id = str(uuid.uuid4())
         
         session, created = ChatSession.objects.get_or_create(session_id=session_id)
 
