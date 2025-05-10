@@ -33,11 +33,6 @@ const glossaryTerms = [
     example: "Le contrat signé pour louer un appartement."
   },
   {
-    term: "Casier judiciaire",
-    definition: "Registre où sont inscrites les condamnations pénales prononcées contre une personne.",
-    example: "Un employeur peut demander un extrait de casier judiciaire pour certains emplois sensibles."
-  },
-  {
     term: "Comparution",
     definition: "Fait de se présenter devant un juge ou un tribunal.",
     example: "Se rendre au tribunal le jour indiqué sur la convocation."
@@ -46,6 +41,12 @@ const glossaryTerms = [
     term: "Délibéré",
     definition: "Phase durant laquelle les juges réfléchissent et discutent entre eux avant de rendre leur décision.",
     example: "Après avoir entendu toutes les parties, le tribunal s'est retiré pour délibérer."
+  }, 
+
+  {
+    term: "instance juridique",
+    definition: "Procédure judiciaire engagée devant un tribunal.",
+    example: "Une instance peut être civile, pénale ou administrative."
   }
 ];
 

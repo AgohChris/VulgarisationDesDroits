@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Send, X, Bot } from "lucide-react";
+import axios from "axios"; // Importer Axios pour les requêtes HTTP
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,34 +32,36 @@ const Chatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputValue.trim() === "") return;
 
     const newMessage = { id: messages.length + 1, text: inputValue, sender: "user" };
-    setMessages(prevMessages => [...prevMessages, newMessage]);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputValue("");
 
-    setTimeout(() => {
-      const botResponse = { id: messages.length + 2, text: getBotResponse(inputValue), sender: "bot" };
-      setMessages(prevMessages => [...prevMessages, botResponse]);
-    }, 1000);
-  };
+    try {
+      // Appeler l'API backend pour obtenir une réponse
+      const response = await axios.post("http://127.0.0.1:8000/api/chatbot/", {
+        message: inputValue,
+      });
 
-  const getBotResponse = (userInput) => {
-    const lowerInput = userInput.toLowerCase();
-    if (lowerInput.includes("droit du travail")) {
-      return "Le droit du travail concerne les relations entre employeurs et employés. Avez-vous une question spécifique sur un contrat, un licenciement, ou des congés ?";
-    } else if (lowerInput.includes("logement") || lowerInput.includes("bail")) {
-      return "Pour les questions de logement, je peux vous aider avec des informations sur les baux, les droits des locataires ou des propriétaires. Quelle est votre situation ?";
-    } else if (lowerInput.includes("famille")) {
-      return "Le droit de la famille couvre des sujets comme le mariage, le divorce, la garde d'enfants. Pouvez-vous préciser votre question ?";
-    } else if (lowerInput.includes("merci")) {
-      return "De rien ! N'hésitez pas si vous avez d'autres questions.";
-    } else {
-      return "Je suis encore en apprentissage. Pourriez-vous reformuler votre question ou consulter nos sections Glossaire ou Thématiques pour plus d'informations ?";
+      const botResponse = {
+        id: messages.length + 2,
+        text: response.data.response || "Désolé, je n'ai pas pu générer de réponse.",
+        sender: "bot",
+      };
+      setMessages((prevMessages) => [...prevMessages, botResponse]);
+    } catch (error) {
+      console.error("Erreur lors de l'appel à l'API :", error);
+      const errorMessage = {
+        id: messages.length + 2,
+        text: "Désolé, une erreur est survenue. Veuillez réessayer plus tard.",
+        sender: "bot",
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
     }
   };
-  
+
   return (
     <>
       <motion.div
@@ -99,7 +102,8 @@ const Chatbot = () => {
             <ScrollArea
               className="flex-grow p-4"
               onScroll={handleScroll}
-              style={{ maxHeight: "calc(70vh - 100px)", overflowY: "auto" }}>
+              style={{ maxHeight: "calc(70vh - 100px)", overflowY: "auto" }}
+            >
               <div className="space-y-4">
                 {messages.map((msg) => (
                   <motion.div
@@ -153,4 +157,3 @@ const Chatbot = () => {
 };
 
 export default Chatbot;
- 
