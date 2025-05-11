@@ -7,8 +7,13 @@ import HomePage from "@/pages/HomePage";
 import GlossaryPage from "@/pages/GlossaryPage";
 import ThematicPage from "@/pages/ThematicPage";
 import ResourcesPage from "@/pages/ResourcesPage";
+import GuidesPage from "@/pages/GuidesPage";
+import PodcastsPage from "@/pages/PodcastsPage";
+import FichesPage from "@/pages/FichesPage";
 import Chatbot from "@/components/Chatbot";
 import { Toaster } from "@/components/ui/toaster";
+
+
 
 const App = () => {
   return (
@@ -20,6 +25,9 @@ const App = () => {
           <Route path="/glossaire" element={<GlossaryPage />} />
           <Route path="/thematiques" element={<ThematicPage />} />
           <Route path="/ressources" element={<ResourcesPage />} />
+          <Route path="/ressources/guides" element={<GuidesPage />} />
+          <Route path="/ressources/podcasts" element={<PodcastsPage />} />
+          <Route path="/ressources/fiches" element={<FichesPage />} />
         </Routes>
       </main>
       <Footer />

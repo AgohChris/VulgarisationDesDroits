@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Search, FileText, Users, VolumeX, Lightbulb, FileArchive } from "lucide-react";
+import { BookOpen, Search, FileText, Users, VolumeX, PlayCircle,Lightbulb, FileArchive } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const featureItems = [
@@ -36,16 +36,22 @@ const featureItems = [
     delay: 0.5
   },
   {
+  icon: <PlayCircle className="h-10 w-10 text-red-600" />, // Icône pour le contenu vidéo
+  title: "Contenu vidéo",
+  description: "Regardez et écoutez les explications juridiques pour une meilleure compréhension et accessibilité.",
+  delay: 0.6
+  },
+  {
     icon: <Lightbulb className="h-10 w-10 text-yellow-600" />,
     title: "Exemples concrets",
     description: "Des cas pratiques et des exemples du quotidien pour illustrer les concepts juridiques.",
-    delay: 0.6
+    delay: 0.7
   },
   {
     icon: <FileArchive className="h-10 w-10 text-indigo-600" />,
     title: "Documents juridiques",
     description: "Accédez à des modèles de documents et formulaires juridiques courants (bientôt disponible).",
-    delay: 0.7
+    delay: 0.8
   }
 ];
 

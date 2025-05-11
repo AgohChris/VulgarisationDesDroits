@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, FileText, Video, Headphones, BookOpen } from "lucide-react";
+import { ExternalLink, FileText, Video, Headphones, BookOpen, ArrowRight } from "lucide-react";
 
 const resourcesData = [
   {
@@ -17,7 +17,8 @@ const resourcesData = [
       { title: "Vos droits en cas de licenciement", type: "PDF" },
       { title: "Comment contester une amende", type: "PDF" }
     ],
-    delay: 0.1
+    delay: 0.1,
+    internalPath: "/ressources/guides" 
   },
   {
     id: "videos",
@@ -29,7 +30,8 @@ const resourcesData = [
       { title: "Comprendre le divorce", type: "Vidéo" },
       { title: "Vos droits face à la police", type: "Vidéo" }
     ],
-    delay: 0.2
+    delay: 0.2,
+    externalUrl: "https://www.youtube.com/channel/VOTRE_CHAINE" 
   },
   {
     id: "podcasts",
@@ -41,7 +43,8 @@ const resourcesData = [
       { title: "Histoires de justice", type: "Audio" },
       { title: "Décryptage juridique", type: "Audio" }
     ],
-    delay: 0.3
+    delay: 0.3,
+    internalPath: "/ressources/podcasts" 
   },
   {
     id: "fiches",
@@ -53,13 +56,14 @@ const resourcesData = [
       { title: "Succession et héritage", type: "Fiche" },
       { title: "Créer une entreprise", type: "Fiche" }
     ],
-    delay: 0.4
+    delay: 0.4,
+    internalPath: "/ressources/fiches" 
   }
 ];
 
 const Resources = () => {
   return (
-    <section className="py-16 bg-white" id="ressources">
+    <section className="py-16 bg-slate-50" id="ressources-component">
       <div className="container mx-auto px-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -69,10 +73,10 @@ const Resources = () => {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ressources <span className="gradient-text">pédagogiques</span>
+            Explorez nos <span className="gradient-text">Ressources</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Des contenus variés pour apprendre et comprendre le droit selon vos préférences.
+            Plongez dans nos contenus juridiques conçus pour vous éclairer.
           </p>
         </motion.div>
 
@@ -86,27 +90,32 @@ const Resources = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: resource.delay }}
             >
-              <Card className="h-full flex flex-col">
+              <Card className="h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <CardHeader>
-                  <div className="mb-4">{resource.icon}</div>
-                  <CardTitle>{resource.title}</CardTitle>
-                  <CardDescription className="text-base">{resource.description}</CardDescription>
+                  <div className="mb-4 flex justify-center">{resource.icon}</div>
+                  <CardTitle className="text-center">{resource.title}</CardTitle>
+                  <CardDescription className="text-base text-center h-20 overflow-hidden">{resource.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex-grow flex flex-col">
-                  <ul className="space-y-3 flex-grow">
-                    {resource.resources.map((item, idx) => (
-                      <li key={idx} className="flex items-center justify-between border-b pb-2">
-                        <span>{item.title}</span>
-                        <span className="text-xs px-2 py-1 bg-gray-100 rounded-full">{item.type}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <CardContent className="flex-grow flex flex-col justify-end">
                   <div className="mt-6">
-                    <Link to={`/ressources#${resource.id}`}>
-                      <Button variant="outline" className="w-full">
-                        Voir ces ressources <ExternalLink className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
+                    {resource.internalPath ? (
+                      <Link to={resource.internalPath} className="w-full">
+                        <Button variant="outline" className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600">
+                          Explorer <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    ) : (
+                      <a 
+                        href={resource.externalUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="w-full"
+                      >
+                        <Button variant="outline" className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white hover:from-red-600 hover:to-orange-600">
+                          Voir les vidéos <ExternalLink className="ml-2 h-4 w-4" />
+                        </Button>
+                      </a>
+                    )}
                   </div>
                 </CardContent>
               </Card>
