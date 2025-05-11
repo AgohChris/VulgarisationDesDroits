@@ -39,7 +39,7 @@ const Newsletter = () => {
       className="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg shadow-lg"
     >
       <div className="max-w-xl mx-auto text-center">
-        <Mail className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+        <Mail className="h-12 w-12 text-blue-600 mx-auto mb-4"/>
         <h3 className="text-2xl font-bold mb-3 text-gray-800">
           Restez informé !
         </h3>
@@ -55,7 +55,7 @@ const Newsletter = () => {
             className="flex-grow search-input"
             aria-label="Adresse e-mail pour la newsletter"
           />
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button type="submit" className="bg-ivory-green text-white px-4 py-2 rounded-r-md hover:bg-ivory-orange">
             S'abonner
           </Button>
         </form>

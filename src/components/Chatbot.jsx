@@ -77,14 +77,15 @@ const Chatbot = () => {
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20, delay: 1 }}
       >
-        <Button
-          onClick={toggleChatbot}
-          size="lg"
-          className="rounded-full shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
-          aria-label={isOpen ? "Fermer le chatbot" : "Ouvrir le chatbot"}
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
-        </Button>
+
+      <Button
+            onClick={toggleChatbot}
+            size="lg"
+            className="rounded-full shadow-lg bg-gradient-to-r from-ivory-orange to-ivory-green text-white hover:from-orange-500 hover:to-green-500"
+            aria-label={isOpen ? "Fermer le chatbot" : "Ouvrir le chatbot"}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
+      </Button>
       </motion.div>
 
       <AnimatePresence>
@@ -97,16 +98,16 @@ const Chatbot = () => {
             className="fixed bottom-24 right-6 w-80 md:w-96 bg-white rounded-lg shadow-xl z-50 border border-gray-200 flex flex-col overflow-hidden"
             style={{ maxHeight: "70vh" }}
           >
-            <header className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
-              <div className="flex items-center">
-                <Bot className="h-6 w-6 mr-2" />
-                <h3 className="font-semibold text-lg">Assistant JuriAccès</h3>
-              </div>
-              <Button variant="ghost" size="icon" onClick={toggleChatbot} className="text-white hover:bg-white/20">
-                <X className="h-5 w-5" />
-              </Button>
-            </header>
-            <ScrollArea
+      <header className="bg-gradient-to-r from-ivory-orange to-ivory-green text-white p-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <Bot className="h-6 w-6 mr-2" />
+            <h3 className="font-semibold text-lg">Assistant JuriAccès</h3>
+          </div>
+          <Button variant="ghost" size="icon" onClick={toggleChatbot} className="text-white hover:bg-white/20">
+            <X className="h-5 w-5" />
+          </Button>
+      </header>
+                  <ScrollArea
               className="flex-grow p-4"
               onScroll={handleScroll}
               style={{ maxHeight: "calc(70vh - 100px)", overflowY: "auto" }}
@@ -123,8 +124,8 @@ const Chatbot = () => {
                     <div
                       className={`max-w-[75%] p-3 rounded-lg ${
                         msg.sender === "user"
-                          ? "bg-blue-500 text-white rounded-br-none"
-                          : "bg-gray-200 text-gray-800 rounded-bl-none"
+                          ? "bg-ivory-orange text-white rounded-br-none"
+                          : "bg-ivory-green text-white rounded-bl-none"
                       }`}
                     >
                       {msg.text}
@@ -135,27 +136,32 @@ const Chatbot = () => {
               </div>
             </ScrollArea>
 
-            <footer className="p-4 border-t border-gray-200 bg-gray-50">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendMessage();
-                }}
-                className="flex items-center gap-2"
-              >
-                <Input
-                  type="text"
-                  placeholder="Posez votre question..."
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className="flex-grow search-input"
-                  aria-label="Message pour le chatbot"
-                />
-                <Button type="submit" size="icon" className="bg-blue-600 hover:bg-blue-700 text-white" aria-label="Envoyer le message">
-                  <Send className="h-5 w-5" />
-                </Button>
-              </form>
-            </footer>
+       <footer className="p-4 border-t border-gray-200 bg-gray-50">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSendMessage();
+          }}
+          className="flex items-center gap-2"
+        >
+          <Input
+            type="text"
+            placeholder="Posez votre question..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            className="flex-grow search-input"
+            aria-label="Message pour le chatbot"
+          />
+           <Button
+              type="submit"
+              size="icon"
+              className="bg-ivory-orange hover:bg-ivory-green text-white rounded-r-md"
+              aria-label="Envoyer le message"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+        </form>
+      </footer>
           </motion.div>
         )}
       </AnimatePresence>

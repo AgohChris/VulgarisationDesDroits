@@ -5,7 +5,8 @@ module.exports = {
 		'./pages/**/*.{js,jsx}',
 		'./components/**/*.{js,jsx}',
 		'./app/**/*.{js,jsx}',
-		'./src/**/*.{js,jsx}',
+		'./src/**/*.{js,jsx,ts,tsx}',
+		'./public/index.html',
 	],
 	theme: {
 		container: {
@@ -50,6 +51,14 @@ module.exports = {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
 				},
+				ivory: {
+					orange: '#FF7F00', // Orange vif pour rappeler le drapeau
+					white: '#FFFFFF', // Blanc pur
+					green: '#009E60', // Vert vif
+				},
+				primary: '#FF7F00', // Couleur principale (orange)
+				secondary: '#009E60', // Couleur secondaire (vert)
+				accent: '#FFFFFF', // Accent (blanc)
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
