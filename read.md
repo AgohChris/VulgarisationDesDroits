@@ -215,3 +215,20 @@ Ce dossier contient des composants d'interface utilisateur réutilisables.
 ---
 
 Si vous avez des questions spécifiques sur une partie du projet, n'hésitez pas à demander !
+
+
+
+coté Admin et fonctionnalité
+
+Authentification Simulée : La connexion est une simple vérification de chaînes de caractères et l'utilisation de localStorage. Ce n'est pas sécurisé pour un environnement de production. Une véritable authentification devra être gérée par votre backend.
+
+
+Fonctionnalités de Gestion de Contenu :
+ Les pages de gestion (
+  Glossaire, 
+  Thématiques,
+  Ressources
+  Newsletter
+  )
+
+  avec les fonctionnalités de CRUD's
