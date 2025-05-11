@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Mail, Phone } from "lucide-react";
+import { Facebook, Twitter, Instagram, Mail, Phone, Linkedin } from "lucide-react";
 import Newsletter from "@/components/Newsletter";
 
 const Footer = () => {
@@ -18,13 +18,13 @@ const Footer = () => {
               Notre mission est de rendre le droit accessible à tous les citoyens, quels que soient leur niveau d'éducation ou leurs capacités.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://facebook.com" className="text-gray-400 hover:text-white transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter size={20} />
+              <a href="https://linkedin.com" className="text-gray-400 hover:text-white transition-colors">
+                <Linkedin size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://instagram.com" className="text-gray-400 hover:text-white transition-colors">
                 <Instagram size={20} />
               </a>
             </div>
@@ -55,11 +55,11 @@ const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-center text-gray-400">
                 <Mail size={16} className="mr-2" />
-                <span>contact@juriacces.fr</span>
+                <span>contact@juriacces.ci</span>
               </li>
               <li className="flex items-center text-gray-400">
                 <Phone size={16} className="mr-2" />
-                <span>01 23 45 67 89</span>
+                <span>+225 07 78 74 86 02</span>
               </li>
             </ul>
           </div>
