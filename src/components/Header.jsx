@@ -42,18 +42,27 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-8">
             <NavigationMenu>
               <NavigationMenuList>
+
                 <NavigationMenuLink asChild>
                   <Link to="/" className={navLinkClasses}>Accueil</Link>
                 </NavigationMenuLink>
+
                 <NavigationMenuLink asChild>
                   <Link to="/glossaire" className={`${navLinkClasses} ml-6`}>Glossaire</Link>
                 </NavigationMenuLink>
+
                 <NavigationMenuLink asChild>
                   <Link to="/thematiques" className={`${navLinkClasses} ml-6`}>Thématiques</Link>
                 </NavigationMenuLink>
+
                 <NavigationMenuLink asChild>
                   <Link to="/ressources" className={`${navLinkClasses} ml-6`}>Ressources</Link>
                 </NavigationMenuLink>
+
+                {/* <NavigationMenuLink asChild>
+                  <Link to="/ressources" className={`${navLinkClasses} ml-6`}>Mes Systeme Juridique</Link>
+                </NavigationMenuLink> */}
+
               </NavigationMenuList>
             </NavigationMenu>
           </div>
