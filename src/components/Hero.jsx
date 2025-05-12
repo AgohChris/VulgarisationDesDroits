@@ -61,7 +61,7 @@ const Hero = () => {
             className="md:w-1/2 mt-12 md:mt-0"
           >
             <div className="relative">
-              <img  alt="Personne consultant des documents juridiques avec des icônes de vulgarisation et d'inclusion" className="rounded-lg shadow-xl" src="https://i.postimg.cc/gjLFmvcM/Chat-GPT-Image-12-mai-2025-a-21-59-22.png" />
+              <img  alt="Personne consultant des documents juridiques avec des icônes de vulgarisation et d'inclusion" className="rounded-lg shadow-xl" src="https://i.postimg.cc/MpS70qBH/Justice-Ivoirienne-1.jpg" />
               
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
