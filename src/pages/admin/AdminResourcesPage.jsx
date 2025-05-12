@@ -4,6 +4,10 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from '@/components/ui/label';
+import { Checkbox } from "@/components/ui/checkbox"; // Assuming you have this or will create it
 import { PlusCircle, Edit, Trash2, FileText, Video, Headphones, BookOpen, ExternalLink } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -12,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // Will create this component
+} from "@/components/ui/select";
 
 const resourceTypes = [
   { value: 'guide', label: 'Guide Pratique', icon: FileText, color: 'blue' },
@@ -31,18 +35,23 @@ const AdminResourcesPage = () => {
   const [resources, setResources] = useState(initialResourcesData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
-  // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
   const [type, setType] = useState(resourceTypes[0].value);
   const [isExternal, setIsExternal] = useState(false);
-
   const { toast } = useToast();
 
   const getResourceIcon = (resourceType) => {
     const rt = resourceTypes.find(r => r.value === resourceType);
-    return rt ? <rt.icon className={`h-5 w-5 mr-2 text-${rt.color}-500`} /> : <FileText className="h-5 w-5 mr-2 text-gray-500" />;
+    const IconComponent = rt ? rt.icon : FileText;
+    const colorClass = rt ? `text-${rt.color}-500` : 'text-gray-500';
+    return <IconComponent className={`h-5 w-5 mr-2 ${colorClass}`} />;
+  };
+  
+  const getResourceLabel = (resourceType) => {
+    const rt = resourceTypes.find(r => r.value === resourceType);
+    return rt ? rt.label : 'Type inconnu';
   };
 
   const openModal = (item = null) => {
@@ -58,11 +67,23 @@ const AdminResourcesPage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentItem(null);
-    // Reset form fields if needed
+    setTitle('');
+    setDescription('');
+    setLink('');
+    setType(resourceTypes[0].value);
+    setIsExternal(false);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!title.trim() || !description.trim() || !link.trim()) {
+        toast({
+            title: "Champs requis",
+            description: "Le titre, la description et le lien de la ressource sont obligatoires.",
+            variant: "destructive",
+        });
+        return;
+    }
     if (currentItem) {
       setResources(resources.map(r => r.id === currentItem.id ? { ...r, title, description, link, type, isExternal } : r));
       toast({ title: "Ressource modifiée", description: `La ressource "${title}" a été mise à jour.` });
@@ -90,9 +111,66 @@ const AdminResourcesPage = () => {
         className="flex justify-between items-center mb-8"
       >
         <h1 className="text-3xl font-bold text-gray-800">Gestion des Ressources</h1>
-        <Button onClick={() => openModal()} className="bg-purple-600 hover:bg-purple-700 text-white">
-          <PlusCircle className="mr-2 h-5 w-5" /> Ajouter une ressource
-        </Button>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogTrigger asChild>
+                <Button onClick={() => openModal()} className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <PlusCircle className="mr-2 h-5 w-5" /> Ajouter une ressource
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold">{currentItem ? 'Modifier' : 'Ajouter'} une ressource</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4 py-4">
+                    <div>
+                        <Label htmlFor="resourceTitle" className="block text-sm font-medium text-gray-700 mb-1">Titre</Label>
+                        <Input id="resourceTitle" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="resourceDescription" className="block text-sm font-medium text-gray-700 mb-1">Description</Label>
+                        <Textarea id="resourceDescription" value={description} onChange={(e) => setDescription(e.target.value)} required rows="3" />
+                    </div>
+                    <div>
+                        <Label htmlFor="resourceType" className="block text-sm font-medium text-gray-700 mb-1">Type de ressource</Label>
+                        <Select value={type} onValueChange={setType}>
+                        <SelectTrigger className="w-full mt-1">
+                            <SelectValue placeholder="Sélectionnez un type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {resourceTypes.map(rt => (
+                            <SelectItem key={rt.value} value={rt.value}>
+                                <div className="flex items-center">
+                                {React.createElement(rt.icon, { className: `h-4 w-4 mr-2 text-${rt.color}-500`})}
+                                {rt.label}
+                                </div>
+                            </SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="resourceLink" className="block text-sm font-medium text-gray-700 mb-1">Lien / Chemin du fichier</Label>
+                        <Input id="resourceLink" value={link} onChange={(e) => setLink(e.target.value)} required placeholder="ex: /guides/mon-guide.pdf ou https://example.com" />
+                    </div>
+                    <div className="flex items-center space-x-2 pt-2">
+                        <Checkbox
+                            id="isExternal"
+                            checked={isExternal}
+                            onCheckedChange={setIsExternal}
+                        />
+                        <Label htmlFor="isExternal" className="text-sm font-medium text-gray-700">
+                            C'est un lien externe (ouvre dans un nouvel onglet)
+                        </Label>
+                    </div>
+                    <DialogFooter className="pt-4">
+                        <DialogClose asChild>
+                            <Button type="button" variant="outline" onClick={closeModal}>Annuler</Button>
+                        </DialogClose>
+                        <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">{currentItem ? 'Sauvegarder' : 'Ajouter'}</Button>   
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -105,13 +183,14 @@ const AdminResourcesPage = () => {
           >
             <Card className="h-full flex flex-col shadow-md hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="flex items-center mb-2">
+                <div className="flex items-center mb-1">
                   {getResourceIcon(resource.type)}
-                  <CardTitle className="text-lg">{resource.title}</CardTitle>
+                  <CardTitle className="text-lg leading-tight">{resource.title}</CardTitle>
                 </div>
-                <CardDescription className="text-sm text-gray-600 h-16 overflow-hidden">{resource.description}</CardDescription>
+                <CardDescription className="text-xs text-gray-500">{getResourceLabel(resource.type)}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
+                <p className="text-sm text-gray-600 mb-2 h-16 overflow-hidden text-ellipsis">{resource.description}</p>
                 <a 
                   href={resource.link} 
                   target={resource.isExternal ? "_blank" : "_self"} 
@@ -121,7 +200,7 @@ const AdminResourcesPage = () => {
                   {resource.link} {resource.isExternal && <ExternalLink className="ml-1 h-3 w-3"/>}
                 </a>
               </CardContent>
-              <CardFooter className="flex justify-end space-x-2">
+              <CardFooter className="flex justify-end space-x-2 pt-4">
                  <Button variant="outline" size="sm" onClick={() => openModal(resource)}>
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -134,74 +213,6 @@ const AdminResourcesPage = () => {
         ))}
       </div>
       {resources.length === 0 && <p className="text-center text-gray-500 mt-8">Aucune ressource trouvée.</p>}
-
-
-      {/* Modal for Add/Edit Resource */}
-      {isModalOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto"
-          onClick={closeModal}
-        >
-          <motion.div 
-            initial={{ scale: 0.9, y: -20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: -20 }}
-            className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">{currentItem ? 'Modifier' : 'Ajouter'} une ressource</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="resourceTitle" className="block text-sm font-medium text-gray-700">Titre</label>
-                <Input id="resourceTitle" value={title} onChange={(e) => setTitle(e.target.value)} required />
-              </div>
-              <div>
-                <label htmlFor="resourceDescription" className="block text-sm font-medium text-gray-700">Description</label>
-                <textarea id="resourceDescription" value={description} onChange={(e) => setDescription(e.target.value)} required rows="3" className="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"></textarea>
-              </div>
-               <div>
-                <label htmlFor="resourceType" className="block text-sm font-medium text-gray-700">Type de ressource</label>
-                <Select value={type} onValueChange={setType}>
-                  <SelectTrigger className="w-full mt-1">
-                    <SelectValue placeholder="Sélectionnez un type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {resourceTypes.map(rt => (
-                      <SelectItem key={rt.value} value={rt.value}>
-                        <div className="flex items-center">
-                          {React.createElement(rt.icon, { className: `h-4 w-4 mr-2 text-${rt.color}-500`})}
-                          {rt.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label htmlFor="resourceLink" className="block text-sm font-medium text-gray-700">Lien / Chemin du fichier</label>
-                <Input id="resourceLink" value={link} onChange={(e) => setLink(e.target.value)} required placeholder="ex: /guides/mon-guide.pdf ou https://example.com" />
-              </div>
-              <div className="flex items-center space-x-2">
-                 <input
-                    type="checkbox"
-                    id="isExternal"
-                    checked={isExternal}
-                    onChange={(e) => setIsExternal(e.target.checked)}
-                    className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                  />
-                <label htmlFor="isExternal" className="text-sm font-medium text-gray-700">C'est un lien externe (ouvre dans un nouvel onglet)</label>
-              </div>
-              <div className="flex justify-end space-x-3 pt-4">
-                 <Button type="button" variant="outline" onClick={closeModal}>Annuler</Button>
-                <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">{currentItem ? 'Sauvegarder' : 'Ajouter'}</Button>   
-              </div>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
     </div>
   );
 };

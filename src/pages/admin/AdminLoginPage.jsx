@@ -21,7 +21,7 @@ const AdminLoginPage = () => {
     setIsLoading(true);
 
     setTimeout(() => {
-      if (email === 'admin@juriacces.fr' && password === 'password123') {
+      if (email === 'agohchris90@gmail.com' && password === 'chris123') {
         localStorage.setItem('adminAuthenticated', 'true');
         toast({
           title: "Connexion réussie!",

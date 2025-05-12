@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, LayoutDashboard, BookOpen, ListTree, FileText, Users, Settings, LogOut, Menu, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, BookOpen, ListTree, FileText, Mail, Settings, LogOut, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 
@@ -10,6 +10,7 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -29,8 +30,7 @@ const AdminLayout = () => {
     { name: 'Glossaire', icon: BookOpen, path: '/admin/glossaire' },
     { name: 'Thématiques', icon: ListTree, path: '/admin/thematiques' },
     { name: 'Ressources', icon: FileText, path: '/admin/ressources' },
-    // { name: 'Utilisateurs', icon: Users, path: '/admin/users' }, // Example for later
-    // { name: 'Paramètres', icon: Settings, path: '/admin/settings' }, // Example for later
+    { name: 'Newsletter', icon: Mail, path: '/admin/newsletter' },
   ];
 
   const sidebarVariants = {
@@ -43,33 +43,35 @@ const AdminLayout = () => {
     closed: { opacity: 0, y: "-100%", transition: { type: 'spring', stiffness: 300, damping: 30 } },
   };
 
-  const NavLink = ({ item, isSidebarOpen }) => (
-    <Link
-      to={item.path}
-      onClick={() => {if(isMobileMenuOpen) setIsMobileMenuOpen(false);}}
-      className="flex items-center p-3 text-gray-200 hover:bg-slate-700 rounded-lg transition-colors duration-200"
-    >
-      <item.icon className={`h-6 w-6 ${isSidebarOpen ? 'mr-4' : 'mx-auto'}`} />
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.span
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, delay: 0.1 }}
-            className="whitespace-nowrap"
-          >
-            {item.name}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </Link>
-  );
+  const NavLink = ({ item, isSidebarOpenCurrent }) => {
+    const isActive = location.pathname === item.path;
+    return (
+      <Link
+        to={item.path}
+        onClick={() => {if(isMobileMenuOpen) setIsMobileMenuOpen(false);}}
+        className={`flex items-center p-3 text-gray-200 hover:bg-slate-700 rounded-lg transition-colors duration-200 ${isActive ? 'bg-slate-700/50 ring-2 ring-sky-400' : ''}`}
+      >
+        <item.icon className={`h-6 w-6 ${isSidebarOpenCurrent ? 'mr-4' : 'mx-auto'} ${isActive ? 'text-sky-300' : ''}`} />
+        <AnimatePresence>
+          {isSidebarOpenCurrent && (
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+              className={`whitespace-nowrap ${isActive ? 'font-semibold text-sky-100' : ''}`}
+            >
+              {item.name}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </Link>
+    );
+  };
 
 
   return (
     <div className="flex h-screen bg-slate-100">
-      {/* Desktop Sidebar */}
       <motion.div
         variants={sidebarVariants}
         animate={isSidebarOpen ? 'open' : 'closed'}
@@ -94,7 +96,7 @@ const AdminLayout = () => {
           </Button>
         </div>
         <nav className="flex-grow p-4 space-y-2">
-          {navItems.map((item) => <NavLink key={item.name} item={item} isSidebarOpen={isSidebarOpen} />)}
+          {navItems.map((item) => <NavLink key={item.name} item={item} isSidebarOpenCurrent={isSidebarOpen} />)}
         </nav>
         <div className="p-4 border-t border-slate-700">
           <button
@@ -119,7 +121,6 @@ const AdminLayout = () => {
         </div>
       </motion.div>
 
-      {/* Mobile Header & Menu */}
       <div className="md:hidden flex flex-col w-full">
         <header className="bg-slate-800 text-white p-4 flex justify-between items-center shadow-md h-16">
           <h1 className="text-xl font-bold gradient-text">Admin JuriAccès</h1>
@@ -137,7 +138,7 @@ const AdminLayout = () => {
             className="absolute top-16 left-0 right-0 bg-slate-800 text-white p-4 z-40 shadow-lg"
           >
             <nav className="space-y-2">
-              {navItems.map((item) => <NavLink key={item.name} item={item} isSidebarOpen={true} />)}
+              {navItems.map((item) => <NavLink key={item.name} item={item} isSidebarOpenCurrent={true} />)}
               <button
                 onClick={handleLogout}
                 className="flex items-center w-full p-3 text-red-400 hover:bg-red-700 hover:text-white rounded-lg transition-colors duration-200 mt-4"
@@ -149,17 +150,19 @@ const AdminLayout = () => {
           </motion.div>
         )}
         </AnimatePresence>
-         <main className="flex-1 p-6 overflow-y-auto">
+         <main className="flex-1 p-4 sm:p-6 overflow-y-auto bg-slate-50">
           <Outlet />
         </main>
       </div>
       
-      {/* Main Content Area (Desktop) */}
       <main className="hidden md:flex flex-1 flex-col">
-         <div className="bg-white shadow-sm p-4 h-16 flex items-center justify-end">
-            <span className="text-gray-600">Admin connecté</span>
+         <div className="bg-white shadow-sm p-4 h-16 flex items-center justify-end border-b">
+            <span className="text-gray-600 mr-4">Admin JuriAccès</span>
+            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+              A
+            </div>
          </div>
-        <div className="p-6 overflow-y-auto flex-grow">
+        <div className="p-6 overflow-y-auto flex-grow bg-slate-50">
            <Outlet />
         </div>
       </main>
