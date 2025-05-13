@@ -1,18 +1,27 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GlossaireController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+
+Route ::get('/ajout',[GlossaireController::class,'formulaire']);
+
+Route::post('/glossaire', [GlossaireController::class, 'ajout']);
+
+
+Route ::get('/liste/glossaire',[GlossaireController::class,'liste']);
+
+
+
+Route :: get('/glossaire/supprimer/{id}',[GlossaireController::class,'suppression']);
+
+
+
+Route::get('/glossaire/modifier/{id}', [GlossaireController::class, 'modifier']);
+Route::post('/glossaire/modifier/{id}', [GlossaireController::class, 'yann']);
