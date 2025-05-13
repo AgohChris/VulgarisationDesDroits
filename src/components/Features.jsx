@@ -103,11 +103,11 @@ const Features = () => {
 						</motion.div>
 					))}
 				</div>
-				<div className="text-center mt-12">
+				{/* <div className="text-center mt-12">
 					<Button className="bg-ivory-orange hover:bg-ivory-green text-white">
 						Découvrir
 					</Button>
-				</div>
+				</div> */}
 			</div>
 		</section>
 	);

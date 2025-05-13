@@ -20,6 +20,9 @@ import AdminGlossaryPage from "@/pages/admin/AdminGlossaryPage";
 import AdminThematicsPage from "@/pages/admin/AdminThematicsPage";
 import AdminResourcesPage from "@/pages/admin/AdminResourcesPage";
 import AdminNewsletterPage from "@/pages/admin/AdminNewsletterPage";
+import AdminJudicialSystemPage from "@/pages/admin/AdminJudicialSystemPage";
+import AdminLawCategoriesPage from "@/pages/admin/AdminLawCategoriesPage";
+import AdminLawSubjectsPage from "@/pages/admin/AdminLawSubjectsPage";
 
 
 const useIsAdminRoute = () => {
@@ -83,6 +86,9 @@ const App = () => {
           <Route path="thematiques" element={<AdminThematicsPage />} />
           <Route path="ressources" element={<AdminResourcesPage />} />
           <Route path="newsletter" element={<AdminNewsletterPage />} />
+          <Route path="systeme-judiciaire" element={<AdminJudicialSystemPage />} />
+          <Route path="categories-droit" element={<AdminLawCategoriesPage />} />
+          <Route path="sujets-droit" element={<AdminLawSubjectsPage />} />
           <Route index element={<Navigate to="dashboard" replace />} />
         </Route>
       </Routes>

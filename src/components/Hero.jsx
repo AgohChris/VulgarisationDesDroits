@@ -68,7 +68,7 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg w-48"
-              >
+                >
                 <div className="flex items-center">
                   <div className="bg-blue-100 p-2 rounded-full mr-3">
                     <BookOpen className="h-6 w-6 text-blue-600" />

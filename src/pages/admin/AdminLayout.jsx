@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, LayoutDashboard, BookOpen, ListTree, FileText, Mail, Settings, LogOut, Menu, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, BookOpen, ListTree, FileText, Mail, Settings, LogOut, Menu, X, Scale, Library, ListChecks } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 
@@ -28,9 +28,12 @@ const AdminLayout = () => {
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
     { name: 'Glossaire', icon: BookOpen, path: '/admin/glossaire' },
-    { name: 'Thématiques', icon: ListTree, path: '/admin/thematiques' },
+    // { name: 'Thématiques', icon: ListTree, path: '/admin/thematiques' },
+    { name: 'Catégories de Droit', icon: Library, path: '/admin/categories-droit' },
+    { name: 'Sujets de Droit', icon: ListChecks, path: '/admin/sujets-droit' },
     { name: 'Ressources', icon: FileText, path: '/admin/ressources' },
     { name: 'Newsletter', icon: Mail, path: '/admin/newsletter' },
+    { name: 'Système Judiciaire', icon: Scale, path: '/admin/systeme-judiciaire' },
   ];
 
   const sidebarVariants = {
@@ -44,7 +47,7 @@ const AdminLayout = () => {
   };
 
   const NavLink = ({ item, isSidebarOpenCurrent }) => {
-    const isActive = location.pathname === item.path;
+    const isActive = location.pathname.startsWith(item.path);
     return (
       <Link
         to={item.path}
@@ -95,7 +98,7 @@ const AdminLayout = () => {
             {isSidebarOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
           </Button>
         </div>
-        <nav className="flex-grow p-4 space-y-2">
+        <nav className="flex-grow p-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => <NavLink key={item.name} item={item} isSidebarOpenCurrent={isSidebarOpen} />)}
         </nav>
         <div className="p-4 border-t border-slate-700">

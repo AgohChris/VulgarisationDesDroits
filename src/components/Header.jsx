@@ -59,9 +59,9 @@ const Header = () => {
                   <Link to="/ressources" className={`${navLinkClasses} ml-6`}>Ressources</Link>
                 </NavigationMenuLink>
 
-                {/* <NavigationMenuLink asChild>
+                <NavigationMenuLink asChild>
                   <Link to="/ressources" className={`${navLinkClasses} ml-6`}>Mes Systeme Juridique</Link>
-                </NavigationMenuLink> */}
+                </NavigationMenuLink>
 
               </NavigationMenuList>
             </NavigationMenu>
