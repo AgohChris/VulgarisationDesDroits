@@ -21,4 +21,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+// Route::post('/glossaire', [GlossaireController::class, 'ajout']);
+Route ::get('/ajout',[GlossaireController::class,'formulaire']);
+
 Route::post('/glossaire', [GlossaireController::class, 'ajout']);
+
+
+Route ::get('/liste/glossaire',[GlossaireController::class,'liste']);
+
+
+
+Route :: get('/glossaire/supprimer/{id}',[GlossaireController::class,'suppression']);
+
+
+
+Route::get('/glossaire/modifier/{id}', [GlossaireController::class, 'modifier']);
+Route::post('/glossaire/modifier/{id}', [GlossaireController::class, 'yann']);
