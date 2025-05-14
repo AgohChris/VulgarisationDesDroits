@@ -3,80 +3,91 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Glossaire; 
-use Illuminate\Validation\ValidationException;
-
+use App\Models\Glossaire;
+use Illuminate\Http\JsonResponse;
 
 class GlossaireController extends Controller
 {
-
-    public function ajout(Request $request){
-        $request->validate([
-            'titre'=>'required|',
-            'description' => 'required',
-            'exemple' => 'required',
+    public function ajout(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'titre' => 'required|string',
+            'description' => 'required|string',
+            'exemple' => 'required|string',
         ]);
-        $glossaire =  new Glossaire ();
-        $glossaire->titre = $request->titre;
-        $glossaire->description = $request->description;
-        $glossaire->exemple = $request->exemple;
-        $glossaire->save();
-        return redirect('/liste/glossaire')->with('ajout', 'Le terme a été ajouté.');
 
+        $glossaire = Glossaire::create($validated);
+
+        return response()->json([
+            'message' => 'Le terme a été ajouté avec succès.',
+            'data' => $glossaire
+        ], 201);
     }
 
-
-
-    public  function formulaire(){
-        return view('glossaire.ajout_glossaire');
-    }
-
-    public function liste(){
+    public function liste(): JsonResponse
+    {
         $glossaires = Glossaire::all();
-        return view('glossaire.liste_glossaire',compact('glossaires'));
+
+        return response()->json([
+            'message' => 'Liste des termes récupérée avec succès.',
+            'data' => $glossaires
+        ], 200);
     }
 
-
-
-
-    public function suppression($id)
+    public function suppression($id): JsonResponse
     {
         $glossaire = Glossaire::find($id);
-        $glossaire->delete(); 
-        return redirect('/liste/glossaire')->with('supprimer', 'Le terme a été supprimé.');
-    }
 
-
-
-    public function modifier($id)
-    {
-        $glossaire = Glossaire::find($id);
         if (!$glossaire) {
-            return redirect('/liste/glossaire')->with('error', 'Terme non trouvé.');
+            return response()->json([
+                'message' => 'Terme non trouvé.'
+            ], 404);
         }
-        return view('glossaire.modifier', compact('glossaire'));
+
+        $glossaire->delete();
+
+        return response()->json([
+            'message' => 'Le terme a été supprimé avec succès.'
+        ], 200);
     }
 
-    public function yann(Request $request, $id)
+    public function modifier($id): JsonResponse
     {
-        $request->validate([
-            'titre' => 'required',
-            'description' => 'required',
-            'exemple' => 'required',
+        $glossaire = Glossaire::find($id);
+
+        if (!$glossaire) {
+            return response()->json([
+                'message' => 'Terme non trouvé.'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Terme trouvé.',
+            'data' => $glossaire
+        ], 200);
+    }
+
+    public function yann(Request $request, $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'titre' => 'required|string',
+            'description' => 'required|string',
+            'exemple' => 'required|string',
         ]);
 
         $glossaire = Glossaire::find($id);
+
         if (!$glossaire) {
-            return redirect('/liste/glossaire')->with('error', 'Terme non trouvé.');
+            return response()->json([
+                'message' => 'Terme non trouvé.'
+            ], 404);
         }
 
-        $glossaire->titre = $request->titre;
-        $glossaire->description = $request->description;
-        $glossaire->exemple = $request->exemple;
-        $glossaire->save();
+        $glossaire->update($validated);
 
-        return redirect('/liste/glossaire')->with('modifier', 'Le terme a été modifié.');
+        return response()->json([
+            'message' => 'Le terme a été mis à jour avec succès.',
+            'data' => $glossaire
+        ], 200);
     }
-
-
 }
