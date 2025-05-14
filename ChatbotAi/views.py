@@ -4,6 +4,8 @@ from rest_framework import status
 from .utils import get_ai_response
 import uuid
 from .models import ChatSession, MessageChat
+from .serializers import ChatSessionSerializer
+from rest_framework.generics import ListAPIView
 
 
 
@@ -35,3 +37,10 @@ class ChatBotAPIVIEW(APIView):
         except Exception as e:
             print(f"Erreur dans ChatBotAPIVIEW : {e}")  # Log de l'erreur
             return Response({"error": "Erreur interne du serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+class ChatSessionListAPiView(ListAPIView):
+    queryset = ChatSession.objects.all()
+    serializer_class = ChatSessionSerializer
+    

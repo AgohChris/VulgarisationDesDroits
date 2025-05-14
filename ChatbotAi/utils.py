@@ -20,6 +20,15 @@ client = OpenAI(
 
 def get_ai_response(message_utilisateur):
     try:
+
+        # contexte_dynamique = (
+        #     "Voici un extrait pertinent du Code du Travail ivoirien : "
+        #     "Article XYZ : 'Tout salarié a droit à une indemnité en cas de licenciement abusif.' "
+        #     "Utilise ces informations pour répondre à la question."
+        # )
+
+
+
         # Envoyer une requête à l'API OpenRouter
         completion = client.chat.completions.create(
             extra_headers={
@@ -33,13 +42,26 @@ def get_ai_response(message_utilisateur):
                     "content": (
                         "Tu es un assistant juridique spécialisé dans le droit et la justice en Côte d'Ivoire. "
                         "Tu réponds aux questions en te basant uniquement sur les lois, règlements et pratiques juridiques "
-                        "de la Côte d'Ivoire. Si une question n'est pas liée au droit ivoirien, indique poliment que tu ne peux pas répondre."
-                        "Si une question concerne le droit répond a cette question mais d'abord de façon terre a terre en français facile de sorte a ce que n'importe qui puisse comprendre."
+                        "de la Côte d'Ivoire."
+                        "Tu adoptes une approche pédagogique en expliquant les concepts juridiques de manière simple et accessible, "
+                        "comme si tu parlais à quelqu'un sans connaissances juridiques. "
+                        "Tu dois suivre la logique et les recommandations de ma coéquipière juriste, qui privilégie des réponses "
+                        "claires, précises et adaptées au contexte ivoirien. "
+                        # f"{contexte_dynamique}"
+                        "Si une question n'est pas liée au droit ivoirien, indique poliment que tu ne peux pas répondre. "
+                        "Si une question concerne le droit, réponds d'abord de manière simple en français facile, "
+                        "puis donne une explication plus détaillée et technique si nécessaire."
+
+                        # "Voici un exemple de réponse que tu dois suivre : "
+                        # "Question : Quels sont les droits d'un salarié en Côte d'Ivoire en cas de licenciement abusif ? "
+                        # "Réponse : En Côte d'Ivoire, un salarié victime de licenciement abusif a droit à une indemnité compensatoire. "
+                        # "En termes simples, cela signifie qu'il peut recevoir une compensation financière pour le préjudice subi. "
+                        # "Plus techniquement, cela est prévu par l'article XYZ du Code du Travail ivoirien, qui stipule que..."
                     )
                 },
                 {"role": "user", "content": message_utilisateur}
             ],
-            max_tokens=200,
+            max_tokens=300,
             temperature=0.3,
         )
         
