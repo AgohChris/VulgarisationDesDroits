@@ -43,4 +43,13 @@ class ChatBotAPIVIEW(APIView):
 class ChatSessionListAPiView(ListAPIView):
     queryset = ChatSession.objects.all()
     serializer_class = ChatSessionSerializer
-    
+
+
+class ChatbotInteractionsCountAPIView(APIView):
+    def get(self,  request):
+        try:
+            interaction_count = MessageChat.objects.count()
+            return Response({"interaction_count":interaction_count}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Erreur dans la View ChatBotInteractionCount... : {e}")
+            return Response({"error": "Errur interne sur le serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
