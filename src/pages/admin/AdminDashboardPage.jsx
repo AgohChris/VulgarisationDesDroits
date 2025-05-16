@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, FileText, BookOpen, ListTree, Mail, MessageCircle, Download, FileSpreadsheet, FileType, FileJson, Scale, Library, ListChecks } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import axios from 'axios'; // Importer Axios pour les appels API
 
 import DashboardStats from '@/components/admin/dashboard/DashboardStats';
 import DailyVisitorsChart from '@/components/admin/dashboard/DailyVisitorsChart';
@@ -34,27 +34,40 @@ const AdminDashboardPage = () => {
       localStorage.setItem('chatbotInteractions', JSON.stringify(initialChatbotQuestions));
     }
 
-    const glossaryCount = JSON.parse(localStorage.getItem('glossaryTerms') || '[]').length;
-    const thematicsCount = JSON.parse(localStorage.getItem('thematicItems') || '[]').length;
-    const resourcesCount = JSON.parse(localStorage.getItem('resourceItems') || '[]').length;
-    const newsletterSubscribersCount = JSON.parse(localStorage.getItem('adminSubscribers') || '[]').length; 
-    const judicialSystemCount = JSON.parse(localStorage.getItem('judicialSystemEntries') || '[]').length;
-    const lawCategoriesCount = JSON.parse(localStorage.getItem('lawCategories') || '[]').length;
-    const lawSubjectsCount = JSON.parse(localStorage.getItem('lawSubjects') || '[]').length;
+    const fetchStats = async () => {
+      try {
+        // Récupérer le nombre d'interactions depuis le backend
+        const response = await axios.get('http://127.0.0.1:8080/api/chatbot/interactions/count/');
+        const interactionCount = response.data.interaction_count;
 
+        // Récupérer d'autres statistiques depuis localStorage
+        const glossaryCount = JSON.parse(localStorage.getItem('glossaryTerms') || '[]').length;
+        const thematicsCount = JSON.parse(localStorage.getItem('thematicItems') || '[]').length;
+        const resourcesCount = JSON.parse(localStorage.getItem('resourceItems') || '[]').length;
+        const newsletterSubscribersCount = JSON.parse(localStorage.getItem('adminSubscribers') || '[]').length;
+        const judicialSystemCount = JSON.parse(localStorage.getItem('judicialSystemEntries') || '[]').length;
+        const lawCategoriesCount = JSON.parse(localStorage.getItem('lawCategories') || '[]').length;
+        const lawSubjectsCount = JSON.parse(localStorage.getItem('lawSubjects') || '[]').length;
 
-    setStatsData([
-      { title: 'Termes du Glossaire', value: glossaryCount, icon: BookOpen, color: 'text-blue-500', bgColor: 'bg-blue-100/50' },
-      { title: 'Thématiques', value: thematicsCount, icon: ListTree, color: 'text-green-500', bgColor: 'bg-green-100/50' },
-      { title: 'Catégories de Droit', value: lawCategoriesCount, icon: Library, color: 'text-purple-500', bgColor: 'bg-purple-100/50' },
-      { title: 'Sujets de Droit', value: lawSubjectsCount, icon: ListChecks, color: 'text-teal-500', bgColor: 'bg-teal-100/50' },
-      { title: 'Ressources Actives', value: resourcesCount, icon: FileText, color: 'text-indigo-500', bgColor: 'bg-indigo-100/50' },
-      { title: 'Système Judiciaire', value: judicialSystemCount, icon: Scale, color: 'text-pink-500', bgColor: 'bg-pink-100/50' },
-      { title: 'Abonnés Newsletter', value: newsletterSubscribersCount, icon: Mail, color: 'text-orange-500', bgColor: 'bg-orange-100/50' },
-      { title: 'Interactions Chatbot', value: chatbotQuestions.length, icon: MessageCircle, color: 'text-cyan-500', bgColor: 'bg-cyan-100/50' },
-    ]);
+        // Mettre à jour les données des statistiques
+        setStatsData([
+          { title: 'Termes du Glossaire', value: glossaryCount, icon: BookOpen, color: 'text-blue-500', bgColor: 'bg-blue-100/50' },
+          { title: 'Thématiques', value: thematicsCount, icon: ListTree, color: 'text-green-500', bgColor: 'bg-green-100/50' },
+          { title: 'Catégories de Droit', value: lawCategoriesCount, icon: Library, color: 'text-purple-500', bgColor: 'bg-purple-100/50' },
+          { title: 'Sujets de Droit', value: lawSubjectsCount, icon: ListChecks, color: 'text-teal-500', bgColor: 'bg-teal-100/50' },
+          { title: 'Ressources Actives', value: resourcesCount, icon: FileText, color: 'text-indigo-500', bgColor: 'bg-indigo-100/50' },
+          { title: 'Système Judiciaire', value: judicialSystemCount, icon: Scale, color: 'text-pink-500', bgColor: 'bg-pink-100/50' },
+          { title: 'Abonnés Newsletter', value: newsletterSubscribersCount, icon: Mail, color: 'text-orange-500', bgColor: 'bg-orange-100/50' },
+          { title: 'Interactions Chatbot', value: interactionCount, icon: MessageCircle, color: 'text-cyan-500', bgColor: 'bg-cyan-100/50' },
+        ]);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des statistiques :', error);
+        toast({ title: 'Erreur', description: 'Impossible de récupérer les statistiques.', variant: 'destructive' });
+      }
+    };
 
-  }, [chatbotQuestions.length]);
+    fetchStats();
+  }, []);
 
 
   return (

@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,15 +8,42 @@ import Papa from 'papaparse';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import axios from 'axios'; // Import Axios pour les appels API
 
-const ChatbotInteractionsTable = ({ chatbotQuestions, toast }) => {
+const ChatbotInteractionsTable = ({ toast }) => {
+  const [chatbotQuestions, setChatbotQuestions] = useState([]); // État pour stocker les données
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fonction pour récupérer les données depuis le backend
+  useEffect(() => {
+    const fetchChatSessions = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8080/api/chats/liste/'); // Remplacez par l'URL de votre API
+        setChatbotQuestions(response.data); // Stocker les données dans l'état
+      } catch (err) {
+        setError('Erreur lors du chargement des interactions.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChatSessions();
+  }, []);
+
+  // Gestion des exports (inchangée)
   const exportToCSV = () => {
     if (chatbotQuestions.length === 0) {
       toast({ title: "Exportation CSV", description: "Aucune donnée à exporter.", variant: "destructive" });
       return;
     }
-    const csv = Papa.unparse(chatbotQuestions.map(q => ({id: q.id, question: q.question, reponse: q.answer, timestamp: q.timestamp, utilisateur: q.user })));
+    const csv = Papa.unparse(chatbotQuestions.map(q => ({
+      id: q.session_id,
+      question: q.messages[0]?.contenue || 'N/A',
+      reponse: q.messages[1]?.contenue || 'N/A',
+      timestamp: q.created_at,
+      utilisateur: 'Utilisateur inconnu', // Ajoutez un champ utilisateur si nécessaire
+    })));
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     if (link.download !== undefined) {
@@ -30,7 +56,7 @@ const ChatbotInteractionsTable = ({ chatbotQuestions, toast }) => {
       document.body.removeChild(link);
       toast({ title: "Exportation CSV", description: "Rapport CSV téléchargé." });
     } else {
-       toast({ title: "Exportation CSV", description: "Le téléchargement direct n'est pas supporté par votre navigateur.", variant: "destructive" });
+      toast({ title: "Exportation CSV", description: "Le téléchargement direct n'est pas supporté par votre navigateur.", variant: "destructive" });
     }
   };
 
@@ -44,14 +70,20 @@ const ChatbotInteractionsTable = ({ chatbotQuestions, toast }) => {
     doc.autoTable({
       startY: 20,
       head: [['ID', 'Question', 'Réponse', 'Timestamp', 'Utilisateur']],
-      body: chatbotQuestions.map(q => [q.id, q.question, q.answer, new Date(q.timestamp).toLocaleString(), q.user]),
+      body: chatbotQuestions.map(q => [
+        q.session_id,
+        q.messages[0]?.contenue || 'N/A',
+        q.messages[1]?.contenue || 'N/A',
+        new Date(q.created_at).toLocaleString(),
+        'Utilisateur inconnu', // Ajoutez un champ utilisateur si nécessaire
+      ]),
       theme: 'striped',
-      headStyles: { fillColor: [22, 160, 133] }, 
+      headStyles: { fillColor: [22, 160, 133] },
       styles: { fontSize: 8 },
       columnStyles: {
-        1: { cellWidth: 50 }, 
-        2: { cellWidth: 50 }, 
-      }
+        1: { cellWidth: 50 },
+        2: { cellWidth: 50 },
+      },
     });
     doc.save('chatbot_interactions.pdf');
     toast({ title: "Exportation PDF", description: "Rapport PDF téléchargé." });
@@ -62,19 +94,27 @@ const ChatbotInteractionsTable = ({ chatbotQuestions, toast }) => {
       toast({ title: "Exportation Excel", description: "Aucune donnée à exporter.", variant: "destructive" });
       return;
     }
-    const worksheet = XLSX.utils.json_to_sheet(chatbotQuestions.map(q => ({ID: q.id, Question: q.question, Réponse: q.answer, Timestamp: new Date(q.timestamp).toLocaleString(), Utilisateur: q.user })));
+    const worksheet = XLSX.utils.json_to_sheet(chatbotQuestions.map(q => ({
+      ID: q.session_id,
+      Question: q.messages[0]?.contenue || 'N/A',
+      Réponse: q.messages[1]?.contenue || 'N/A',
+      Timestamp: new Date(q.created_at).toLocaleString(),
+      Utilisateur: 'Utilisateur inconnu', // Ajoutez un champ utilisateur si nécessaire
+    })));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Interactions Chatbot");
     XLSX.writeFile(workbook, "chatbot_interactions.xlsx");
     toast({ title: "Exportation Excel", description: "Rapport Excel téléchargé." });
   };
 
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }} // Adjusted delay
+      transition={{ duration: 0.5, delay: 0.3 }}
     >
       <Card className="shadow-xl rounded-xl">
         <CardHeader>
@@ -112,13 +152,13 @@ const ChatbotInteractionsTable = ({ chatbotQuestions, toast }) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {chatbotQuestions.slice().reverse().slice(0, 10).map((log) => ( 
-                    <TableRow key={log.id}>
-                      <TableCell className="font-medium">{log.id}</TableCell>
-                      <TableCell>{log.question}</TableCell>
-                      <TableCell>{log.answer}</TableCell>
-                      <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
-                      <TableCell>{log.user}</TableCell>
+                  {chatbotQuestions.map((log) => (
+                    <TableRow key={log.session_id}>
+                      <TableCell className="font-medium">{log.session_id}</TableCell>
+                      <TableCell>{log.messages[0]?.contenue || 'N/A'}</TableCell>
+                      <TableCell>{log.messages[1]?.contenue || 'N/A'}</TableCell>
+                      <TableCell>{new Date(log.created_at).toLocaleString()}</TableCell>
+                      <TableCell>Utilisateur inconnu</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -126,9 +166,6 @@ const ChatbotInteractionsTable = ({ chatbotQuestions, toast }) => {
             </div>
           ) : (
             <p className="text-center text-gray-500 py-4">Aucune interaction enregistrée pour le moment.</p>
-          )}
-          {chatbotQuestions.length > 10 && (
-              <p className="text-xs text-gray-500 mt-2 text-center">Affichage des 10 interactions les plus récentes. Exportez pour voir toutes les données.</p>
           )}
         </CardContent>
       </Card>

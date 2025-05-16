@@ -1,59 +1,24 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-
-const glossaryTerms = [
-  {
-    term: "Abus de droit",
-    definition: "Utilisation d'un droit dans le but de nuire à autrui ou d'une manière excessive et déraisonnable.",
-    example: "Un propriétaire qui construit un mur très haut uniquement pour bloquer la vue de son voisin."
-  },
-  {
-    term: "Acquiescement",
-    definition: "Acceptation expresse ou tacite d'une décision de justice, qui entraîne renonciation aux voies de recours.",
-    example: "Payer volontairement une amende sans contester l'infraction."
-  },
-  {
-    term: "Assignation",
-    definition: "Acte de procédure par lequel une personne est convoquée devant un tribunal.",
-    example: "Recevoir un document officiel vous demandant de vous présenter au tribunal à une date précise."
-  },
-  {
-    term: "Ayant droit",
-    definition: "Personne qui tient son droit d'une autre personne, notamment par succession.",
-    example: "Les enfants qui héritent des biens de leurs parents décédés."
-  },
-  {
-    term: "Bail",
-    definition: "Contrat par lequel une personne (le bailleur) met un bien à disposition d'une autre (le locataire) pour une durée déterminée et moyennant un loyer.",
-    example: "Le contrat signé pour louer un appartement."
-  },
-  {
-    term: "Comparution",
-    definition: "Fait de se présenter devant un juge ou un tribunal.",
-    example: "Se rendre au tribunal le jour indiqué sur la convocation."
-  },
-  {
-    term: "Délibéré",
-    definition: "Phase durant laquelle les juges réfléchissent et discutent entre eux avant de rendre leur décision.",
-    example: "Après avoir entendu toutes les parties, le tribunal s'est retiré pour délibérer."
-  }, 
-
-  {
-    term: "instance juridique",
-    definition: "Procédure judiciaire engagée devant un tribunal.",
-    example: "Une instance peut être civile, pénale ou administrative."
-  }
-];
+import { fetchGlossaries } from "@/api/glossary";
 
 const Glossary = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchTerm = searchParams.get("q") || "";
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [glossaryTerms, setGlossaryTerms] = useState([]);
+
+  useEffect(() => {
+    const loadGlossaries = async () => {
+      const data = await fetchGlossaries();
+      setGlossaryTerms(data);
+    };
+    loadGlossaries();
+  }, []);
 
   useEffect(() => {
     setSearchTerm(searchParams.get("q") || "");

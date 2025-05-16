@@ -42,7 +42,7 @@ const Chatbot = () => {
 
     try {
       // Appeler l'API backend pour obtenir une réponse
-      const response = await axios.post("http://127.0.0.1:8000/api/chatbot/", {
+      const response = await axios.post("http://127.0.0.1:8080/api/chatbot/", {
         message: inputValue,
         session_id: sessionId, // Inclure l'ID de session
       });

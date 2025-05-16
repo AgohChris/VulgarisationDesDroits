@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,15 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, Edit, Trash2, Search } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { Label } from '@/components/ui/label';
-
-const initialGlossaryData = [
-  { id: 1, term: 'Abrogation', definition: "Suppression d'une loi ou d'un règlement.", example: "L'abrogation de cette ancienne loi a simplifié la procédure." },
-  { id: 2, term: 'Contrat de travail', definition: "Accord par lequel une personne s'engage à travailler pour un employeur moyennant rémunération.", example: "Le contrat de travail doit préciser la durée, le poste et le salaire." },
-  { id: 3, term: 'Jurisprudence', definition: "Ensemble des décisions des tribunaux sur une question juridique donnée.", example: "La jurisprudence constante de la Cour de cassation sur ce point est claire." },
-];
+import { fetchGlossaries, addGlossary, updateGlossary, deleteGlossary } from '@/api/glossary';
 
 const AdminGlossaryPage = () => {
-  const [glossaryItems, setGlossaryItems] = useState(initialGlossaryData);
+  const [glossaryItems, setGlossaryItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
@@ -25,6 +19,20 @@ const AdminGlossaryPage = () => {
   const [definition, setDefinition] = useState('');
   const [example, setExample] = useState('');
   const { toast } = useToast();
+
+  useEffect(() => {
+    const loadGlossaries = async () => {
+      try {
+        const data = await fetchGlossaries();
+        console.log("Glossaires chargés :", data); // Vérifiez les données ici
+        setGlossaryItems(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des glossaires :", error);
+      }
+    };
+
+    loadGlossaries();
+  }, []);
 
   const filteredItems = glossaryItems.filter(item => 
     item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -47,29 +55,26 @@ const AdminGlossaryPage = () => {
     setExample('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!term.trim() || !definition.trim()) {
-        toast({
-            title: "Champs requis",
-            description: "Le terme et la définition ne peuvent pas être vides.",
-            variant: "destructive",
-        });
-        return;
+      toast({
+        title: "Champs requis",
+        description: "Le terme et la définition ne peuvent pas être vides.",
+        variant: "destructive",
+      });
+      return;
     }
-    if (currentItem) {
-      setGlossaryItems(glossaryItems.map(item => item.id === currentItem.id ? { ...item, term, definition, example } : item));
-      toast({ title: "Terme modifié", description: `Le terme "${term}" a été mis à jour.` });
-    } else {
-      const newItem = { id: Date.now(), term, definition, example };
-      setGlossaryItems([...glossaryItems, newItem]);
-      toast({ title: "Terme ajouté", description: `Le terme "${term}" a été ajouté au glossaire.` });
-    }
+    const newItem = { titre: term, description: definition, exemple: example };
+    await addGlossary(newItem);
+    const data = await fetchGlossaries();
+    setGlossaryItems(data);
     closeModal();
   };
 
-  const handleDelete = (id, termName) => {
+  const handleDelete = async (id, termName) => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer le terme "${termName}" ?`)) {
+      await deleteGlossary(id);
       setGlossaryItems(glossaryItems.filter(item => item.id !== id));
       toast({ title: "Terme supprimé", description: `Le terme "${termName}" a été supprimé.`, variant: "destructive" });
     }
