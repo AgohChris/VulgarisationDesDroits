@@ -60,7 +60,7 @@ const Header = () => {
                 </NavigationMenuLink>
 
                 <NavigationMenuLink asChild>
-                  <Link to="/ressources" className={`${navLinkClasses} ml-6`}>Mes Systeme Juridique</Link>
+                  <Link to="/systeme-judiciaire" className={`${navLinkClasses} ml-6`}>Systeme Juridique</Link>
                 </NavigationMenuLink>
 
               </NavigationMenuList>

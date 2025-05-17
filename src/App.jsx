@@ -10,6 +10,7 @@ import ResourcesPage from "@/pages/ResourcesPage";
 import GuidesPage from "@/pages/GuidesPage";
 import PodcastsPage from "@/pages/PodcastsPage";
 import FichesPage from "@/pages/FichesPage";
+import JudicialSystemPage from "@/pages/JudicialSystemPage";
 import Chatbot from "@/components/Chatbot";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -70,6 +71,7 @@ const App = () => {
           <Route path="/ressources/guides" element={<GuidesPage />} />
           <Route path="/ressources/podcasts" element={<PodcastsPage />} />
           <Route path="/ressources/fiches" element={<FichesPage />} />
+          <Route path="/systeme-judiciaire" element={<JudicialSystemPage />} />
         </Route>
         
         <Route path="/admin/login" element={<AdminLoginPage />} />

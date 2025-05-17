@@ -24,7 +24,6 @@ const AdminGlossaryPage = () => {
     const loadGlossaries = async () => {
       try {
         const data = await fetchGlossaries();
-        console.log("Glossaires chargés :", data); // Vérifiez les données ici
         setGlossaryItems(data);
       } catch (error) {
         console.error("Erreur lors du chargement des glossaires :", error);
@@ -35,15 +34,15 @@ const AdminGlossaryPage = () => {
   }, []);
 
   const filteredItems = glossaryItems.filter(item => 
-    item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.definition.toLowerCase().includes(searchTerm.toLowerCase())
+    item.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const openModal = (item = null) => {
     setCurrentItem(item);
-    setTerm(item ? item.term : '');
-    setDefinition(item ? item.definition : '');
-    setExample(item ? item.example : '');
+    setTerm(item ? item.titre : ''); // Remplacez item.term par item.titre
+    setDefinition(item ? item.description : ''); // Remplacez item.definition par item.description
+    setExample(item ? item.exemple : ''); // Remplacez item.example par item.exemple
     setIsModalOpen(true);
   };
 
@@ -66,17 +65,31 @@ const AdminGlossaryPage = () => {
       return;
     }
     const newItem = { titre: term, description: definition, exemple: example };
-    await addGlossary(newItem);
-    const data = await fetchGlossaries();
-    setGlossaryItems(data);
-    closeModal();
+    try {
+      if (currentItem) {
+        await updateGlossary(currentItem.id, newItem);
+        toast({ title: "Terme modifié", description: `Le terme "${term}" a été modifié.`, variant: "success" });
+      } else {
+        await addGlossary(newItem);
+        toast({ title: "Terme ajouté", description: `Le terme "${term}" a été ajouté.`, variant: "success" });
+      }
+      const data = await fetchGlossaries();
+      setGlossaryItems(data);
+      closeModal();
+    } catch (error) {
+      console.error("Erreur lors de l'ajout ou de la modification :", error);
+    }
   };
 
   const handleDelete = async (id, termName) => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer le terme "${termName}" ?`)) {
-      await deleteGlossary(id);
-      setGlossaryItems(glossaryItems.filter(item => item.id !== id));
-      toast({ title: "Terme supprimé", description: `Le terme "${termName}" a été supprimé.`, variant: "destructive" });
+      try {
+        await deleteGlossary(id);
+        setGlossaryItems(glossaryItems.filter(item => item.id !== id));
+        toast({ title: "Terme supprimé", description: `Le terme "${termName}" a été supprimé.`, variant: "destructive" });
+      } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
+      }
     }
   };
 
@@ -144,17 +157,17 @@ const AdminGlossaryPage = () => {
           >
             <Card className="h-full flex flex-col shadow-md hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle>{item.term}</CardTitle>
+                <CardTitle>{item.titre}</CardTitle> {/* Remplacez item.term par item.titre */}
               </CardHeader>
               <CardContent className="flex-grow">
-                <p className="text-sm text-gray-600 mb-2">{item.definition}</p>
-                {item.example && <p className="text-xs text-gray-500 italic">Exemple: {item.example}</p>}
+                <p className="text-sm text-gray-600 mb-2">{item.description}</p> {/* Remplacez item.definition par item.description */}
+                {item.exemple && <p className="text-xs text-gray-500 italic">Exemple: {item.exemple}</p>} {/* Remplacez item.example par item.exemple */}
               </CardContent>
               <CardDescription className="p-6 pt-0 flex justify-end space-x-2">
                 <Button variant="outline" size="sm" onClick={() => openModal(item)}>
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleDelete(item.id, item.term)}>
+                <Button variant="destructive" size="sm" onClick={() => handleDelete(item.id, item.titre)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </CardDescription>

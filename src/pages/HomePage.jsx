@@ -7,6 +7,7 @@ import Features from "@/components/Features";
 import GlossaryPreview from "@/components/GlossaryPreview"; 
 import ThematicSectionPreview from "@/components/ThematicSectionPreview";
 import ResourcesPreview from "@/components/ResourcesPreview";
+import JudicialSystemPreview from "@/components/JudicialSystemPreview";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -24,13 +25,14 @@ const HomePage = () => {
       <Features />
       <GlossaryPreview />
       <ThematicSectionPreview />
+      <JudicialSystemPreview />
       <ResourcesPreview />
       <motion.section 
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="bg-ivory-orange text-white py-10"
+        className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
       >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">

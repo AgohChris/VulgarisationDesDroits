@@ -69,7 +69,7 @@ const ChatbotInteractionsTable = ({ toast }) => {
     doc.text("Rapport des Interactions du Chatbot", 14, 16);
     doc.autoTable({
       startY: 20,
-      head: [['ID', 'Question', 'Réponse', 'Timestamp', 'Utilisateur']],
+      head: [['Session', 'Question', 'Réponse', 'Timestamp', 'Utilisateur']],
       body: chatbotQuestions.map(q => [
         q.session_id,
         q.messages[0]?.contenue || 'N/A',
@@ -144,7 +144,7 @@ const ChatbotInteractionsTable = ({ toast }) => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[80px]">ID</TableHead>
+                    <TableHead className="w-[80px]">Session</TableHead>
                     <TableHead>Question</TableHead>
                     <TableHead>Réponse</TableHead>
                     <TableHead className="w-[180px]">Timestamp</TableHead>

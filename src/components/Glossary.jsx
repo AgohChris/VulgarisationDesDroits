@@ -25,9 +25,9 @@ const Glossary = () => {
   }, [searchParams]);
 
   const filteredTerms = glossaryTerms.filter(item => 
-    item.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    item.definition.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.example.toLowerCase().includes(searchTerm.toLowerCase())
+    item.titre.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.exemple.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSearchChange = (e) => {
@@ -85,17 +85,17 @@ const Glossary = () => {
           className="max-w-3xl mx-auto"
         >
           <Accordion type="single" collapsible className="w-full" defaultValue={filteredTerms.length > 0 && searchTerm ? "item-0" : undefined}>
-            {filteredTerms.map((item, index) => (
+            {filteredTerms && filteredTerms.map((item, index) => (
               <AccordionItem key={index} value={`item-${index}`} className="glossary-item">
                 <AccordionTrigger className="text-lg font-medium hover:no-underline">
-                  {item.term}
+                  {item.titre}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="mt-2">
-                    <p className="text-gray-700 mb-3">{item.definition}</p>
+                    <p className="text-gray-700 mb-3">{item.description}</p>
                     <div className="bg-blue-50 p-3 rounded-md">
                       <p className="text-sm font-medium text-blue-800">Exemple :</p>
-                      <p className="text-sm text-blue-700">{item.example}</p>
+                      <p className="text-sm text-blue-700">{item.exemple}</p>
                     </div>
                   </div>
                 </AccordionContent>
