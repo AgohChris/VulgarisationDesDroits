@@ -88,4 +88,13 @@ class ActeurJudiciaireController extends Controller
             'data' => $acteur
         ], 200);
     }
+
+        public function count(): JsonResponse
+{
+    $total = ActeurJudiciaire::count();
+
+    return response()->json([
+        'total' => $total
+    ], 200);
+}
 }

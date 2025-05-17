@@ -48,6 +48,8 @@ Route::prefix('acteur-judiciaire')->group(function () {
     Route::delete('/supprimer/{id}', [ActeurJudiciaireController::class, 'suppression']);
     Route::get('/modifier/{id}', [ActeurJudiciaireController::class, 'modifier']);
     Route::put('/update/{id}', [ActeurJudiciaireController::class, 'update']);
+    Route::get('/count', [ActeurJudiciaireController::class, 'count']);
+
 });
 
 
