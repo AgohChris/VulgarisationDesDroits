@@ -44,7 +44,6 @@ class ChatSessionListAPiView(ListAPIView):
     queryset = ChatSession.objects.all()
     serializer_class = ChatSessionSerializer
 
-
 class ChatbotInteractionsCountAPIView(APIView):
     def get(self,  request):
         try:
