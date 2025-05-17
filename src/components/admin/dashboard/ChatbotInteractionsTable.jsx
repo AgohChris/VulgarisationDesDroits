@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MessageCircle, FileSpreadsheet, FileType, FileJson } from 'lucide-react';
 import Papa from 'papaparse';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+// import jsPDF from 'jspdf';
+// import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import axios from 'axios'; // Import Axios pour les appels API
 
@@ -60,34 +60,59 @@ const ChatbotInteractionsTable = ({ toast }) => {
     }
   };
 
-  const exportToPDF = () => {
-    if (chatbotQuestions.length === 0) {
-      toast({ title: "Exportation PDF", description: "Aucune donnée à exporter.", variant: "destructive" });
-      return;
-    }
-    const doc = new jsPDF();
-    doc.text("Rapport des Interactions du Chatbot", 14, 16);
-    doc.autoTable({
-      startY: 20,
-      head: [['Session', 'Question', 'Réponse', 'Timestamp', 'Utilisateur']],
-      body: chatbotQuestions.map(q => [
-        q.session_id,
-        q.messages[0]?.contenue || 'N/A',
-        q.messages[1]?.contenue || 'N/A',
-        new Date(q.created_at).toLocaleString(),
-        'Utilisateur inconnu', // Ajoutez un champ utilisateur si nécessaire
-      ]),
-      theme: 'striped',
-      headStyles: { fillColor: [22, 160, 133] },
-      styles: { fontSize: 8 },
-      columnStyles: {
-        1: { cellWidth: 50 },
-        2: { cellWidth: 50 },
-      },
-    });
-    doc.save('chatbot_interactions.pdf');
-    toast({ title: "Exportation PDF", description: "Rapport PDF téléchargé." });
-  };
+  // const exportToPDF = () => {
+  //   if (chatbotQuestions.length === 0) {
+  //     toast({ title: "Exportation PDF", description: "Aucune donnée à exporter.", variant: "destructive" });
+  //     return;
+  //   }
+
+  //   try {
+  //     const doc = new jsPDF();
+  //     doc.setFontSize(14);
+  //     doc.text("Rapport des Interactions du Chatbot", 14, 16);
+
+  //     // Ajout du tableau avec les données
+  //     const truncate = (str, maxLength) => {
+  //       if (!str) return 'N/A'; // Retourne 'N/A' si la chaîne est vide ou invalide
+  //       return str.length > maxLength ? str.substring(0, maxLength) + "..." : str;
+  //     };
+
+  //     try {
+  //       doc.autoTable({
+  //         startY: 25,
+  //         head: [['Session', 'Question', 'Réponse', 'Timestamp', 'Utilisateur']],
+  //         body: chatbotQuestions.map(q => [
+  //           q.session_id,
+  //           truncate(q.messages[0]?.contenue || 'N/A', 50),
+  //           truncate(q.messages[1]?.contenue || 'N/A', 50),
+  //           new Date(q.created_at).toLocaleString(),
+  //           'Utilisateur inconnu',
+  //         ]),
+  //         theme: 'striped',
+  //         headStyles: { fillColor: [22, 160, 133] },
+  //         styles: { fontSize: 10 },
+  //         columnStyles: {
+  //           0: { cellWidth: 30 },
+  //           1: { cellWidth: 50 },
+  //           2: { cellWidth: 50 },
+  //           3: { cellWidth: 40 },
+  //           4: { cellWidth: 40 },
+  //         },
+  //       });
+  //     } catch (error) {
+  //       console.error("Erreur lors de la génération du tableau PDF :", error);
+  //       toast({ title: "Exportation PDF", description: "Une erreur est survenue lors de la génération du tableau.", variant: "destructive" });
+  //       return;
+  //     }
+
+  //     // Téléchargement du fichier PDF
+  //     doc.save('chatbot_interactions.pdf');
+  //     toast({ title: "Exportation PDF", description: "Rapport PDF téléchargé avec succès." });
+  //   } catch (error) {
+  //     console.error("Erreur lors de l'exportation en PDF :", error);
+  //     toast({ title: "Exportation PDF", description: "Une erreur est survenue lors de l'exportation.", variant: "destructive" });
+  //   }
+  // };
 
   const exportToExcel = () => {
     if (chatbotQuestions.length === 0) {
@@ -129,9 +154,9 @@ const ChatbotInteractionsTable = ({ toast }) => {
               <Button variant="outline" size="sm" onClick={exportToCSV} className="text-xs">
                 <FileSpreadsheet className="mr-1 h-4 w-4" /> CSV
               </Button>
-              <Button variant="outline" size="sm" onClick={exportToPDF} className="text-xs">
+              {/* <Button variant="outline" size="sm" onClick={exportToPDF} className="text-xs">
                 <FileType className="mr-1 h-4 w-4" /> PDF
-              </Button>
+              </Button> */}
               <Button variant="outline" size="sm" onClick={exportToExcel} className="text-xs">
                 <FileJson className="mr-1 h-4 w-4" /> Excel
               </Button>

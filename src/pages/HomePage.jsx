@@ -32,7 +32,7 @@ const HomePage = () => {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+        className="py-16 bg-gradient-to-r from-ivory-orange to-ivory-green text-white p-4 "
       >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
