@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
+import { fetchStructures, addStructure, updateStructure, deleteStructure } from '@/api/structureJudicial';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from "@/components/ui/use-toast";
-import { Scale, PlusCircle, Edit, Trash2, Search } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Search } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import {
   Dialog,
@@ -17,38 +17,47 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const AdminJudicialSystemPage = () => {
-  const [entries, setEntries] = useState(() => {
-    const savedEntries = localStorage.getItem('judicialSystemEntries');
-    return savedEntries ? JSON.parse(savedEntries) : [
-      { id: 1, name: "Cour de Cassation", role: "Juge les décisions des cours d'appel et des tribunaux de première instance." },
-      { id: 2, name: "Conseil d'État", role: "Conseille le gouvernement et juge les litiges administratifs." },
-      { id: 3, name: "Tribunal Judiciaire", role: "Compétent pour la plupart des litiges civils et pénaux." },
-    ];
-  });
-
+  const [entries, setEntries] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentEntry, setCurrentEntry] = useState(null);
   const [entryName, setEntryName] = useState('');
   const [entryRole, setEntryRole] = useState('');
+  const [entryExample, setEntryExample] = useState(''); // Ajoutez l'état pour 'exemple'
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
+  // Charger les données depuis l'API
   useEffect(() => {
-    localStorage.setItem('judicialSystemEntries', JSON.stringify(entries));
-  }, [entries]);
+    const loadStructures = async () => {
+      try {
+        const data = await fetchStructures();
+        console.log("Données récupérées :", data); // Ajoutez ce log
+        setEntries(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des structures judiciaires :", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les structures judiciaires.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    loadStructures();
+  }, []);
 
   const filteredEntries = entries.filter(entry =>
-    entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    entry.role.toLowerCase().includes(searchTerm.toLowerCase())
+    entry.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    entry.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const openModal = (entry = null) => {
     setCurrentEntry(entry);
-    setEntryName(entry ? entry.name : '');
-    setEntryRole(entry ? entry.role : '');
+    setEntryName(entry ? entry.nom : '');
+    setEntryRole(entry ? entry.description : '');
+    setEntryExample(entry ? entry.exemple : ''); // Ajoutez 'exemple'
     setIsModalOpen(true);
   };
 
@@ -57,154 +66,153 @@ const AdminJudicialSystemPage = () => {
     setCurrentEntry(null);
     setEntryName('');
     setEntryRole('');
+    setEntryExample(''); // Réinitialisez 'exemple'
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!entryName.trim() || !entryRole.trim()) {
       toast({
-        title: "Champs Requis",
-        description: "Le nom et le rôle ne peuvent pas être vides.",
+        title: "Champs requis",
+        description: "Le nom et la description ne peuvent pas être vides.",
         variant: "destructive",
       });
       return;
     }
 
-    if (currentEntry) {
-      setEntries(entries.map(item =>
-        item.id === currentEntry.id ? { ...item, name: entryName, role: entryRole } : item
-      ));
-      toast({ title: "Entrée Modifiée", description: `L'entrée "${entryName}" a été mise à jour.` });
-    } else {
-      const newEntry = {
-        id: Date.now(),
-        name: entryName,
-        role: entryRole,
-      };
-      setEntries([newEntry, ...entries]);
-      toast({ title: "Entrée Ajoutée", description: `L'entrée "${entryName}" a été ajoutée.` });
-    }
-    closeModal();
-  };
+    const newEntry = { nom: entryName, description: entryRole, exemple: entryExample }; // Incluez 'exemple'
 
-  const handleDelete = (id, name) => {
-    if (window.confirm(`Êtes-vous sûr de vouloir supprimer l'entrée "${name}" ?`)) {
-      setEntries(entries.filter(item => item.id !== id));
+    try {
+      if (currentEntry) {
+        // Mise à jour
+        await updateStructure(currentEntry.id, newEntry);
+        toast({
+          title: "Structure mise à jour",
+          description: `La structure "${entryName}" a été mise à jour.`,
+          variant: "success",
+        });
+      } else {
+        // Ajout
+        await addStructure(newEntry);
+        toast({
+          title: "Structure ajoutée",
+          description: `La structure "${entryName}" a été ajoutée.`,
+          variant: "success",
+        });
+      }
+
+      // Recharger les données
+      const data = await fetchStructures();
+      setEntries(data);
+      closeModal();
+    } catch (error) {
+      console.error("Erreur lors de l'ajout ou de la mise à jour :", error);
       toast({
-        title: "Entrée Supprimée",
-        description: `L'entrée "${name}" a été supprimée.`,
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'enregistrement.",
         variant: "destructive",
       });
     }
   };
 
-  return (
-    <div className="container mx-auto py-8">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
-      >
-        <h1 className="text-3xl font-bold text-gray-800 flex items-center mb-4 sm:mb-0">
-          <Scale className="mr-3 h-8 w-8 text-indigo-600" /> Gestion du Système Judiciaire
-        </h1>
-        <Button onClick={() => openModal()} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-          <PlusCircle className="mr-2 h-5 w-5" /> Ajouter une Entrée
-        </Button>
-      </motion.div>
+  const handleDelete = async (id, name) => {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer la structure "${name}" ?`)) {
+      try {
+        await deleteStructure(id);
+        setEntries(entries.filter(entry => entry.id !== id));
+        toast({
+          title: "Structure supprimée",
+          description: `La structure "${name}" a été supprimée.`,
+          variant: "destructive",
+        });
+      } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de supprimer la structure.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <Card className="shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-xl text-gray-700">Liste des Entités Judiciaires</CardTitle>
-            <CardDescription>Visualisez et gérez les différentes entités et rôles du système judiciaire.</CardDescription>
-            <div className="mt-4 relative">
-              <Input
-                type="text"
-                placeholder="Rechercher une entité ou un rôle..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-1/2 lg:w-1/3"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {filteredEntries.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[250px]">Nom de l'Entité/Rôle</TableHead>
-                      <TableHead>Description du Rôle</TableHead>
-                      <TableHead className="w-[150px] text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredEntries.map((entry) => (
-                      <TableRow key={entry.id}>
-                        <TableCell className="font-medium">{entry.name}</TableCell>
-                        <TableCell>{entry.role}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button variant="outline" size="icon" onClick={() => openModal(entry)} className="text-blue-600 hover:text-blue-700">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="icon" onClick={() => handleDelete(entry.id, entry.name)} className="text-red-600 hover:text-red-700">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 py-8">Aucune entrée trouvée ou correspondant à la recherche.</p>
-            )}
-          </CardContent>
-        </Card>
-      </motion.div>
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Gestion des Structures Judiciaires</h1>
+        <Button onClick={() => openModal()} variant="primary">
+          <PlusCircle className="mr-2 h-5 w-5" />
+          Ajouter une structure
+        </Button>
+      </div>
+
+      <Input
+        type="text"
+        placeholder="Rechercher une structure..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-6"
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredEntries.map((entry) => (
+          <Card key={entry.id} className="shadow-md">
+            <CardHeader>
+              <CardTitle>{entry.nom}</CardTitle>
+              <CardDescription>{entry.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex justify-end space-x-2">
+              <Button variant="outline" size="sm" onClick={() => openModal(entry)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => handleDelete(entry.id, entry.nom)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>{currentEntry ? "Modifier l'Entrée" : "Ajouter une Nouvelle Entrée"}</DialogTitle>
+            <DialogTitle>{currentEntry ? "Modifier une structure" : "Ajouter une structure"}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="entryName" className="block text-sm font-medium text-gray-700 mb-1">Nom de l'Entité/Rôle</Label>
-              <Input
-                id="entryName"
-                type="text"
-                value={entryName}
-                onChange={(e) => setEntryName(e.target.value)}
-                placeholder="Ex: Tribunal de Grande Instance"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="entryRole" className="block text-sm font-medium text-gray-700 mb-1">Description du Rôle</Label>
-              <Textarea
-                id="entryRole"
-                value={entryRole}
-                onChange={(e) => setEntryRole(e.target.value)}
-                placeholder="Décrivez brièvement le rôle ou la fonction."
-                rows={4}
-                required
-              />
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="entryName">Nom</Label>
+                <Input
+                  id="entryName"
+                  value={entryName}
+                  onChange={(e) => setEntryName(e.target.value)}
+                  placeholder="Nom de la structure"
+                />
+              </div>
+              <div>
+                <Label htmlFor="entryRole">Description</Label>
+                <Textarea
+                  id="entryRole"
+                  value={entryRole}
+                  onChange={(e) => setEntryRole(e.target.value)}
+                  placeholder="Description de la structure"
+                />
+              </div>
+              <div>
+                <Label htmlFor="entryExample">Exemple</Label>
+                <Textarea
+                  id="entryExample"
+                  value={entryExample}
+                  onChange={(e) => setEntryExample(e.target.value)}
+                  placeholder="Exemple de la structure judiciaire"
+                />
+              </div>
             </div>
             <DialogFooter>
+              <Button type="submit">{currentEntry ? "Mettre à jour" : "Ajouter"}</Button>
               <DialogClose asChild>
-                <Button type="button" variant="outline">Annuler</Button>
+                <Button variant="outline">Annuler</Button>
               </DialogClose>
-              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                {currentEntry ? "Sauvegarder les Modifications" : "Ajouter l'Entrée"}
-              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
