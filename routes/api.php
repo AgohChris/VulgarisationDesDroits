@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GlossaireController;
 
 use App\Http\Controllers\ActeurJudiciaireController;
+use App\Http\Controllers\StructureJudiciaireController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,4 +48,16 @@ Route::prefix('acteur-judiciaire')->group(function () {
     Route::delete('/supprimer/{id}', [ActeurJudiciaireController::class, 'suppression']);
     Route::get('/modifier/{id}', [ActeurJudiciaireController::class, 'modifier']);
     Route::put('/update/{id}', [ActeurJudiciaireController::class, 'update']);
+});
+
+
+##----Mes routes de structure , faut pas mélanger mon vieux science
+
+Route::prefix('structure-judiciaire')->group(function () {
+    Route::post('/ajout', [StructureJudiciaireController::class, 'ajout']);
+    Route::get('/liste', [StructureJudiciaireController::class, 'liste']);
+    Route::delete('/supprimer/{id}', [StructureJudiciaireController::class, 'suppression']);
+    Route::get('/modifier/{id}', [StructureJudiciaireController::class, 'modifier']);
+    Route::put('/update/{id}', [StructureJudiciaireController::class, 'update']);
+    Route::get('/count', [StructureJudiciaireController::class, 'count']);
 });
