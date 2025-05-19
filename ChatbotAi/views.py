@@ -6,6 +6,8 @@ import uuid
 from .models import *
 from .serializers import *
 from rest_framework.generics import ListAPIView
+from django.core.mail import send_mail
+from django.utils.timezone import now
 
 
 
@@ -73,18 +75,72 @@ class NewsletterAbonneeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class NewsletterMessageView(APIView):
     def get(self, request):
         messages = NewsletterMessage.objects.all()
         serializer = NewsletterMessageSerializer(messages, many=True)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def post(self, request):
+        print("Données reçues :", request.data)  # Log des données reçues
         serializer = NewsletterMessageSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+        print("Erreurs de validation :", serializer.errors)  # Log des erreurs
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class SendNewsletterAPIView(APIView):
+    def post(self, request, pk):
+        try:
+            message = NewsletterMessage.objects.get(pk=pk, is_sent=False)
+            abonnés = NewsletterAbonnee.objects.filter(is_active=True)
+
+            for abonné in abonnés:
+                send_mail(
+                    subject=message.objet,
+                    message=message.contenue,
+                    from_email='agohchris90@gmail.com',
+                    recipient_list=[abonné.email],
+                )
+
+            message.is_sent = True
+            message.date_envoie = now()
+            message.save()
+
+            return Response({"message": "Newsletter envoyée avec succès."}, status=status.HTTP_200_OK)
+        except NewsletterMessage.DoesNotExist:
+            return Response({"error": "Message introuvable ou déjà envoyé."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+class NewsletterMessageDetailAPIView(APIView):
+    def get_object(self, pk):
+        try:
+            return NewsletterMessage.objects.get(pk=pk)
+        except NewsletterMessage.DoesNotExist:
+            return None
+
+    def put(self, request, pk):
+        message = self.get_object(pk)
+        if not message:
+            return Response({"error": "Message introuvable"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = NewsletterMessageSerializer(message, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        message = self.get_object(pk)
+        if not message:
+            return Response({"error": "Message introuvable"}, status=status.HTTP_404_NOT_FOUND)
+        
+        message.delete()
+        return Response({"message": "Message supprimé avec succès"}, status=status.HTTP_204_NO_CONTENT)
+    
+    

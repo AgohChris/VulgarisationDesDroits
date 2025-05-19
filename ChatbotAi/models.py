@@ -6,10 +6,9 @@ class ChatSession(models.Model):
     session_id = models.CharField(max_length=255, unique=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now=True)
 
-
     def __str__(self):
         return self.session_id
-    
+   
 
 class MessageChat(models.Model):
     session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, related_name="messages")
@@ -28,12 +27,12 @@ class NewsletterAbonnee(models.Model):
 
 
     def __str__(self):
-        return f"{self.email} inscrit le {self.date_inscription} "
+        return f"{self.email} inscrit le {self.date_inscription}"
     
 
 
 class NewsletterMessage(models.Model):
-    objet = models.CharField(max_length=10)
+    objet = models.CharField(max_length=100)
     contenue = models.TextField(blank=False)
     date_creation = models.DateTimeField(auto_now=True)
     statut = models.CharField(max_length=30, choices=[("brouillon", "Brouillon"), ("envoyée", "Envoyée")], default="brouillon")
@@ -42,4 +41,6 @@ class NewsletterMessage(models.Model):
 
     def __str__(self):
         return f"{self.objet} - {self.statut}"
+
+
 
