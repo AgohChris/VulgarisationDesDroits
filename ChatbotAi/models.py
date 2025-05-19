@@ -20,4 +20,26 @@ class MessageChat(models.Model):
     def __str__(self):
         return f"{self.expediteur}: {self.contenue[:50]}"
     
+
+class NewsletterAbonnee(models.Model):
+    email = models.EmailField(unique=True)
+    date_inscription = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+
+    def __str__(self):
+        return f"{self.email} inscrit le {self.date_inscription} "
     
+
+
+class NewsletterMessage(models.Model):
+    objet = models.CharField(max_length=10)
+    contenue = models.TextField(blank=False)
+    date_creation = models.DateTimeField(auto_now=True)
+    statut = models.CharField(max_length=30, choices=[("brouillon", "Brouillon"), ("envoyée", "Envoyée")], default="brouillon")
+    date_envoie = models.DateTimeField(null=True, blank=True)
+    is_sent = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.objet} - {self.statut}"
+

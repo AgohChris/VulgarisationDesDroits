@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import ChatBotAPIVIEW, ChatSessionListAPiView, ChatbotInteractionsCountAPIView
+from .views import *
 
 urlpatterns = [
     path('chatbot/', ChatBotAPIVIEW.as_view(), name='chatbot_api'),
     path('chats/liste/', ChatSessionListAPiView.as_view(), name='chat_sessions'),
     path('chatbot/interactions/count/', ChatbotInteractionsCountAPIView.as_view(), name='chatbot_interactions_count'),
+    path('newsletter/abonnee', NewsletterAbonneeView.as_view(), name='newsletter_abonnee'),
+    path('newsletter/message', NewsletterMessageView.as_view(), name='newsletter_messages'),
 ]
