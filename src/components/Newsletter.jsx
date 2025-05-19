@@ -1,30 +1,29 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail } from "lucide-react";
+import { addSubscriber } from "@/api/newsletter";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email && email.includes("@")) {
-      // Simuler une inscription à la newsletter
-      console.log("Email soumis:", email);
+    try {
+      await addSubscriber(email);
       toast({
         title: "Inscription réussie !",
         description: `Merci de vous être abonné à notre newsletter avec l'adresse : ${email}`,
         variant: "default",
       });
       setEmail("");
-    } else {
+    } catch (error) {
       toast({
         title: "Erreur d'inscription",
-        description: "Veuillez entrer une adresse e-mail valide.",
+        description: error.response?.data?.email || "Une erreur est survenue.",
         variant: "destructive",
       });
     }
