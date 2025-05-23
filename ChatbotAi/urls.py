@@ -7,13 +7,16 @@ urlpatterns = [
     path('chatbot/interactions/count/', ChatbotInteractionsCountAPIView.as_view(), name='chatbot_interactions_count'),
 
 
+    # Newsletter
+    # Abonnement à la newsletter
     path('newsletter/abonnee', NewsletterAbonneeView.as_view(), name='newsletter_abonnee'),
-    # path('newsletter/abonnes/<int:pk>/', NewsletterAbonneeDetailAPIView.as_view(), name='newsletter_abonne_detail'),
+    # Désabonnement à la newsletter
+    path('newsletter/desabonnement', NewsletterDesabonnementView.as_view(), name='newsletter_desabonnement'),
 
 
-    # Messages
     path('newsletter/messages/', NewsletterMessageView.as_view(), name='newsletter_messages'),
-    path('newsletter/messages/<int:pk>/suppression', NewsletterMessageDetailAPIView.as_view(), name='newsletter_message_detail'),
+    path('newsletter/messages/<int:pk>/update', NewsletterMessageUpdateView.as_view(), name='newsletter_message_update'),
+    path('newsletter/messages/<int:pk>/suppression', NewsletterMessageDeleteView.as_view(), name='newsletter_message_delete'),
     path('newsletter/messages/<int:pk>/send/', SendNewsletterAPIView.as_view(), name='send_newsletter'),
 
 ]
