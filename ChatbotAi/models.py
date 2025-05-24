@@ -8,6 +8,7 @@ class ChatSession(models.Model):
 
     def __str__(self):
         return self.session_id
+  
    
 
 class MessageChat(models.Model):
@@ -19,6 +20,7 @@ class MessageChat(models.Model):
     def __str__(self):
         return f"{self.expediteur}: {self.contenue[:50]}"
     
+
 
 class NewsletterAbonnee(models.Model):
     email = models.EmailField(unique=True)
@@ -32,15 +34,11 @@ class NewsletterAbonnee(models.Model):
 
 
 class NewsletterMessage(models.Model):
-    objet = models.CharField(max_length=100)
-    contenue = models.TextField(blank=False)
-    date_creation = models.DateTimeField(auto_now=True)
-    statut = models.CharField(max_length=30, choices=[("brouillon", "Brouillon"), ("envoyée", "Envoyée")], default="brouillon")
+    objet = models.CharField(max_length=255)
+    contenue = models.TextField()
+    statut = models.CharField(max_length=50, default='brouillon')
     date_envoie = models.DateTimeField(null=True, blank=True)
-    is_sent = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.objet} - {self.statut}"
-
-
-

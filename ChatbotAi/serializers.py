@@ -25,4 +25,8 @@ class NewsletterAbonneeSerializer(ModelSerializer):
 class NewsletterMessageSerializer(ModelSerializer):
     class Meta:
         model = NewsletterMessage
-        fields = ['id', 'objet', 'contenue', 'date_creation', 'statut', 'date_envoie', 'is_sent']
+        fields = ['id', 'objet', 'contenue', 'statut', 'date_envoie', 'updated_at']
+        extra_kwargs = {
+            'objet': {'required': True},
+            'contenue': {'required': True},
+        }

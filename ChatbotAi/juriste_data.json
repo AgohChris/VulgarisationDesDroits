@@ -33,7 +33,7 @@
         {
           "question": "Qu’est-ce qu’un préavis ?",
           "simple": "un préavis de licensement, c'est un délai qu'un employeur doit respecter avant de licencier un salarié ou que l'employeur doit respecter avant de démissionner",
-          "exemple": "l'employeur doit respecter un délai de 30 jours pour licensier un agant de maitrise ou de 3 mois pour licensier un cadre"
+          "exemple": "l'employeur doit respecter un délai de 30 jours pour licensier un agent de maitrise ou de 3 mois pour licensier un cadre"
         },
         {
           "question": "Quelle est la durée du préavis ?",
@@ -41,8 +41,7 @@
         },
         {
           "question": "Que se passe-t-il si un employeur ne respecte pas le préavis ?",
-          "simple": "Si un employeur ne respecte pas le préavis, on dit qu'il y à licenciement abusif. Dans ce cas la, l'employeur doit payer l'indemnité de préavis en plus des autres indemnités.",
-          "exemple": " "
+          "simple": "Si un employeur ne respecte pas le préavis, on dit qu'il y à licenciement abusif. Dans ce cas la, l'employeur doit payer l'indemnité de préavis en plus des autres indemnités."
         }
       ]
     },
@@ -52,18 +51,15 @@
       "questions": [
         {
           "question": "Quelles sont les différences entre un CDD et un CDI ?",
-          "simple": "la premiere différence entre un CDI et un CDD est que le CDD est conclu pour une durée bien déterminée, tandis que le CDI est conclu pour un temps indéterminé. La seconde différence réside dans le fait que l'on ne prévois pas de forme particulière pour le CDI, c'est à dire peut importe qu'il soit écrit ou non. Le CDD par contre exige un écrit. Il est donc à noté que lorsqu'un contrat n'est pas écrit, il est réputé être un CDI.",
-          "exemple": " "
+          "simple": "la premiere différence entre un CDI et un CDD est que le CDD est conclu pour une durée bien déterminée, tandis que le CDI est conclu pour un temps indéterminé. La seconde différence réside dans le fait que l'on ne prévois pas de forme particulière pour le CDI, c'est à dire peut importe qu'il soit écrit ou non. Le CDD par contre exige un écrit. Il est donc à noté que lorsqu'un contrat n'est pas écrit, il est réputé être un CDI."
         },
         {
           "question": "Quelles sont les clauses obligatoires dans un contrat de travail ?",
-          "simple": "Pour un CDD: la durée, le salaire, information sur l'employer et l'employeur. Pour un CDI: le salaire, information sur l'employer et l'employeur...",
-          "exemple": " "
+          "simple": "Pour un CDD: la durée, le salaire, information sur l'employer et l'employeur. Pour un CDI: le salaire, information sur l'employer et l'employeur..."
         },
         {
           "question": "Que faire si un employer ne respecte pas les clauses d’un contrat de travail ?",
-          "simple": "Cela entraine la résiliation du contrat pour inexécution. l'employeur peut donc exiger des indemenités.",
-          "exemple": " "
+          "simple": "Cela entraine la résiliation du contrat pour inexécution. l'employeur peut donc exiger des indemenités."
         }
       ]
     },
@@ -73,40 +69,51 @@
       "questions": [
         {
           "question": "le salarié à droit a combien de congés payer dans le mois ?",
-          "simple": "Il à droit à 2 jour ouvrannle de congés payé par mois",
-          "exemple": " "
+          "simple": "Il à droit à 2,2 jour ouvrable de congés payé par mois"
         },
         {
           "question": "Que se passe-t-il si un employeur refuse d’accorder des congés payés ?",
-          "simple": "l'employer est en droit de saisir l'inspection du travail pour exigence à l'employeur. Si l'inspecteur du travail ne réussi pas à résoudre le probléme, l'employer peut maintenant saisir le tribunal du travail.",
-          "exemple": " "
+          "simple": "l'employer est en droit de saisir l'inspection du travail pour exigence à l'employeur. Si l'inspecteur du travail ne réussi pas à résoudre le probléme, l'employer peut maintenant saisir le tribunal du travail."
         },
         {
           "question": "Comment sont calculés les congés payés en Côte d’Ivoire ?",
-          "simple": " ",
-          "exemple": " "
+          "simple": {
+            "introduction": "Pour calculer les congés payés en C.I il faut suivre 6 étapes :",
+            "etape_1": "étape 1: Déterminer la période de référence : la date du retour du dernier congé à la date de départ du prochain congé.",
+            "exemple_1": "prenons un exemple: M. AGOH est rentré des congés le 1er janvier 2023 et son prochain congé est prévu le 1er janvier 2024, la période de référence est 12 mois",
+
+            "etape_2": "étape 2: Déterminer le salaire moyen mensuel (SMM) : le salaire de la période de référence divisé par le nombre de mois écoulé pendant la période de référence.",
+            "exemple_2": "Exemple : suivant l’exemple susmentionné, si M. AGOH pendant les 12 mois percevait un salaire de 2 000 000 FR, on fera  2 000 000 divisé par 12",
+
+            "etape_3": "étape 3: Calculer le salaire moyen journalier (SMJ) : le salaire moyen mensuel divisé par 30 jours (en C.I c’est toujours 30 jours même pour le mois de février)",
+
+            "etape_4": "étape 4 : Calculer le nombre de jours ouvrable de congé (MJO) : nombre de mois écoulé pendant la période de référence multiplié par 2,2",
+          
+            "etape_5": "étape 5 : Calculer le nombre de jours calendaire (NJC) : le nombre de jours ouvrable multiplié par 1,25",
+
+            "etape_6": "étape 6 : Calculer enfin les allocations de congés payés : salaire mensuel journalier multiplié par le nombre de jours calendaire "
+
+          }
         }
       ]
     }
   },
+
 
   "droit_civil": {
     "succession": {
       "questions": [
         {
           "question": "Qu’est-ce qu’une succession ?",
-          "simple": "C'est une transmission du patrimoine d'une personne décédée à une ou plusieurs personne vivantes.",
-          "exemple": " "
+          "simple": "C'est une transmission du patrimoine d'une personne décédée à une ou plusieurs personne vivantes."
         },
         {
           "question": "Qui sont les héritiers prioritaires en cas de décès sans testament ?",
-          "simple": "Les enfants, la femme, le marie (s'ils étaient marié sous le régime de la communauté de bien) les petits enfants",
-          "exemple": " "
+          "simple": "Les enfants, la femme, le marie (s'ils étaient marié sous le régime de la communauté de bien) les petits enfants"
         },
         {
           "question": "Comment se déroule le partage des biens en cas de succession ?",
-          "simple": "Lorsqu'il y à un testament, le partage se fait suivant la volonté du défunt. Lorsqu'il n'y a pas de testament, le patrimoine du defunt se partage comme suit: La femme marié ou le marie a droit à droit à la moité des biens de la communauté de biens et du quart du patrimoine du defunt, et le reste est repartie entre les enfants.",
-          "exemple": " "
+          "simple": "Lorsqu'il y à un testament, le partage se fait suivant la volonté du défunt. Lorsqu'il n'y a pas de testament, le patrimoine du defunt se partage comme suit: La femme marié ou le marie a droit à droit à la moité des biens de la communauté de biens et du quart du patrimoine du defunt, et le reste est repartie entre les enfants."
         }
       ]
     }, 
@@ -115,30 +122,18 @@
       "questions": [
         {
           "question": "Quelles sont les conditions pour se marier en Côte d’Ivoire ?",
-          "simple": "On à les conditions de forme et les conditions de fond. Pour les conditions de formes, le mariage est célébré par un officier de l'Etat civil... Pour les conditions de fond, le mariage est fait entre une femme et un homme, entre des majeurs, avec le consentement de deux parties, entre des personnes capable.",
-          "exemple": ""
+          "simple": "On à les conditions de forme et les conditions de fond. Pour les conditions de formes, le mariage est célébré par un officier de l'Etat civil... Pour les conditions de fond, le mariage est fait entre une femme et un homme, entre des majeurs, avec le consentement de deux parties, entre des personnes capable."
         },
         {
           "question": "Quelles sont les conséquences juridiques d’un mariage coutumier ?",
-          "simple": "a revoir",
-          "exemple": ""
+          "simple": "Avant 2019, notamment par à partie de la loi de 1964, le mariage coutumier ou encore la dot était une infraction. Ce n’est qu’en 2019 que cette loi a été abrogé. Aujourd’hui le mariage coutumier ne confère aucuns droits et n’impose aucunes obligations aux personnes mariées coutumièrement."
         }
       ]
     },
 
     "divorce": {
-      "questions": [
-        {
-          "question": "Quelles sont les causes légales de divorce en Côte d’Ivoire ?",
-          "simple": "Nous avons le divorce pour faute et le divorce pour consentement mutuel",
-          "exemple": " "
-        },
-        {
-          "question": "Quels sont les droits des époux après un divorce ?",
-          "simple": " ",
-          "exemple": " "
-        }
-      ]
+      "question": "Quelles sont les causes légales de divorce en Côte d’Ivoire ?",
+      "simple": "Nous avons le divorce pour faute et le divorce pour consentement mutuel"  
     }
 
   }, 
@@ -147,31 +142,23 @@
   "droit_de_la_santé": {
 
     "consentement_aux_soins": {
-      "questions": [
-        {
-          "question": "Qu’est-ce que le consentement aux soins ?",
-          "simple": "C'est le fait pour un patient après avoir été informer d'accepter ou non de recevoir des soins, des traitements...",
-          "exemple": " "
-        }
-      ]
+      "question":"Qu’est-ce que le consentement aux soins ?",
+      "simple": "C'est le fait pour un patient après avoir été informer d'accepter ou non de recevoir des soins, des traitements..."
     },
 
     "secret_médical": {
       "questions": [
         {
           "question": "Qu’est-ce que le secret médical ?",
-          "simple": "C'est une obligation qui pèse sur un professionnel de santé. Il doit garder les informations sur la santé du patient. En d'autre termes, il ne doit pas divulguer les informations médicals du patient.",
-          "exemple": " "
+          "simple": "C'est une obligation qui pèse sur un professionnel de santé. Il doit garder les informations sur la santé du patient. En d'autre termes, il ne doit pas divulguer les informations médicals du patient."
         },
         {
           "question": "Dans quels cas le secret médical peut-il être levé ?",
-          "simple": "En cas de nécessité de signaler des services sur mineur.",
-          "exemple": ""
+          "simple": "En cas de nécessité de signaler des services sur mineur."
         }
       ]
     }
   },
-
 
 
   "droit_de_la_consommation": {
@@ -184,22 +171,20 @@
         },
         {
           "question": "Dans quels cas un consommateur peut-il exercer son droit de rétractation ?",
-          "simple": "Si l'objet n'est pas conforme a l'objet initial, si il à changé d'avis, si le produit présente des avarie... Mais dans un délai bien précis",
-          "exemple": ""
+          "simple": "Si l'objet n'est pas conforme a l'objet initial, si il à changé d'avis, si le produit présente des avarie... Mais dans un délai bien précis"
         }
       ]
     },
+
     "garantie_légale": {
       "questions": [
         {
           "question": "Qu’est-ce que la garantie légale de conformité ?",
-          "simple": "Cela veut dire que le produit doit pouvoir répondre aux besoins dont il est destoné à satisfaire.",
-          "exemple": ""
+          "simple": "Cela veut dire que le produit doit pouvoir répondre aux besoins dont il est destoné à satisfaire."        
         },
         {
           "question": "Quels sont les recours en cas de produit défectueux ?",
-          "simple": "Le consommateur peut retourner le produit et exiger partiellement ou totalement le prix du produit si le défaut ne viens pas de lui. Il peut aussi exiger réparation si il a subit un dommage.",
-          "exemple": ""
+          "simple": "Le consommateur peut retourner le produit et exiger partiellement ou totalement le prix du produit si le défaut ne viens pas de lui. Il peut aussi exiger réparation si il a subit un dommage."        
         }
       ]
     }

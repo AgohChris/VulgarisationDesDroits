@@ -37,11 +37,36 @@ def charger_donnees_juriste(fichier="ChatbotAi/juriste_data.json"):
 donnees_juriste = charger_donnees_juriste()
 
 
+def nettoyer_json(fichier_entree, fichier_sortie):
+    """
+    Supprime les champs inutiles (comme 'technique') dans le fichier JSON.
+    """
+    with open(fichier_entree, "r") as f:
+        donnees = json.load(f)
+
+    def nettoyer_questions(questions):
+        for question in questions:
+            if "technique" in question:
+                del question["technique"]
+
+    # Parcourir les domaines et nettoyer les questions
+    for domaine, themes in donnees.items():
+        for theme, contenu in themes.items():
+            if "questions" in contenu:
+                nettoyer_questions(contenu["questions"])
+
+    # Sauvegarder le fichier nettoyé
+    with open(fichier_sortie, "w") as f:
+        json.dump(donnees, f, indent=4, ensure_ascii=False)
+    print(f"Fichier nettoyé et sauvegardé sous : {fichier_sortie}")
+
+# Exécuter le nettoyage
+nettoyer_json("ChatbotAi/juriste_data.json", "ChatbotAi/juriste_data_nettoyer.json")
+
+
+# Pour trouver une similarité en cas de reformulation des questions posé par l'utilisateur avant de répondre.
 def recherche_reponse(message_utilisateur, donnees, seuil_similarite=80):
-    """
-    Recherche une réponse dans les données JSON en fonction du message utilisateur,
-    avec correspondance approximative.
-    """
+  
     meilleure_question = None
     meilleure_similarite = 0
     meilleure_reponse = None
@@ -49,21 +74,26 @@ def recherche_reponse(message_utilisateur, donnees, seuil_similarite=80):
     for domaine, themes in donnees.items():
         for theme, contenu in themes.items():
             for question in contenu.get("questions", []):
-                # Calculer la similarité entre la question posée et les questions du JSON
-                similarite = fuzz.ratio(message_utilisateur.lower(), question["question"].lower())
-                print(f"Similarité entre '{message_utilisateur}' et '{question['question']}': {similarite}%")
-                if similarite > meilleure_similarite and similarite >= seuil_similarite:
-                    meilleure_similarite = similarite
-                    meilleure_question = question["question"]
-                    simple = question["simple"]
-                    if isinstance(simple, dict):
-                        simple_reponse = "\n".join([simple.get("introduction", ""), simple.get("cas_1", ""), simple.get("cas_2", "")])
-                    else:
-                        simple_reponse = simple
-                    
-                    technique = question.get("technique", "")
-                    exemple = question.get("exemple", "")
-                    meilleure_reponse = f"{simple_reponse}\n\n{technique}\n\nExemple : {exemple}"
+                if isinstance(question, dict) and "question" in question:
+                    # Calculer la similarité entre la question posée et les questions du JSON
+                    similarite = fuzz.ratio(message_utilisateur.lower(), question["question"].lower())
+                    print(f"Similarité entre '{message_utilisateur}' et '{question['question']}': {similarite}%")
+                    if similarite > meilleure_similarite and similarite >= seuil_similarite:
+                        meilleure_similarite = similarite
+                        meilleure_question = question["question"]
+                        simple = question["simple"]
+                        
+                        # Traiter les réponses structurées
+                        if isinstance(simple, dict):
+                            simple_reponse = simple.get("introduction", "")
+                            for key, value in simple.items():
+                                if key.startswith("etape_") or key.startswith("exemple_"):
+                                    simple_reponse += f"\n- {value}"
+                        else:
+                            simple_reponse = simple
+                        
+                        exemple = question.get("exemple", "")
+                        meilleure_reponse = f"{simple_reponse}\n\nExemple : {exemple}"
 
     if meilleure_reponse:
         print(f"Question similaire trouvée : {meilleure_question} (Similarité : {meilleure_similarite}%)")
@@ -71,6 +101,22 @@ def recherche_reponse(message_utilisateur, donnees, seuil_similarite=80):
 
     print("Aucune réponse trouvée dans les données JSON.")
     return None
+
+
+
+def valider_donnees_json(donnees):
+    for domaine, themes in donnees.items():
+        for theme, contenu in themes.items():
+            if "questions" in contenu :
+                for question in contenu["questions"]:
+                    if not isinstance(question,  dict) or "question" not in question:
+                        print(f"Problème détecté dans le thème '{theme}' du domaine '{domaine}': {question}")
+                        return False
+                    
+    return True
+
+if not valider_donnees_json(donnees_juriste):
+    print("Le fichier JSON contient des erreurs de structure.")
 
 
 
@@ -100,8 +146,6 @@ def get_ai_response(message_utilisateur):
                         "de la Côte d'Ivoire. "
                         "Tu adoptes une approche pédagogique en expliquant les concepts juridiques de manière simple et accessible, "
                         "comme si tu parlais à quelqu'un sans connaissances juridiques. "
-                        "Tu dois suivre la logique et les recommandations de ma coéquipière juriste, qui privilégie des réponses "
-                        "claires, précises et adaptées au contexte ivoirien. "
                         "Si une question n'est pas liée au droit ivoirien, indique poliment que tu ne peux pas répondre. "
                         "Si une question concerne le droit, réponds d'abord de manière simple en français facile, "
                         "puis donne un exemple de cas pour élucider."
@@ -112,18 +156,29 @@ def get_ai_response(message_utilisateur):
             max_tokens=300,
             temperature=0.3,
         )
-        
+
+        # Ajouter un log pour inspecter la réponse complète de l'API
+        print("Réponse complète de l'API OpenRouter :", completion)
+
         # Extraire la réponse de l'API
-        return completion.choices[0].message.content.strip()
+        if hasattr(completion, "choices") and len(completion.choices) > 0:
+            message = completion.choices[0].message
+            if hasattr(message, "content"):
+                return message.content.strip()
+        else:
+            print("Réponse inattendue de l'API OpenRouter :", completion)
+            return "Désolé, je ne comprends pas."
     except Exception as e:
         print(f"Erreur OpenRouter : {e}")
-        traceback.print_exc()  # Affiche la pile d'erreurs complète
+        traceback.print_exc()
         return "Désolé, je ne comprends pas."
     
 
 
 def ajouter_reponse(domaine, theme, question, simple, exemple, fichier="juriste_data.json"):
-    
+    """
+    Ajoute une nouvelle question et sa réponse dans le fichier JSON.
+    """
     donnees = charger_donnees_juriste(fichier)
 
     if domaine not in donnees:
@@ -131,16 +186,16 @@ def ajouter_reponse(domaine, theme, question, simple, exemple, fichier="juriste_
     if theme not in donnees[domaine]:
         donnees[domaine][theme] = {"questions": []}
 
-
-    # Ajout de nouvellle question
-    donnees[domaine][theme]["question"].append({
+    # Ajouter la nouvelle question
+    donnees[domaine][theme]["questions"].append({
         "question": question,
         "simple": simple,
         "exemple": exemple
     })
 
-    # ecrire et Sauvegarder la question dans je Json en fonction du domaine
-    with open (fichier, "w") as f:
+    # Sauvegarder les modifications dans le fichier JSON
+    with open(fichier, "w") as f:
         json.dump(donnees, f, indent=4, ensure_ascii=False)
-    print(f"Question ajouté sous le thème : '{theme} dans le domaine '{domaine}'.")
+    print(f"Question ajoutée sous le thème '{theme}' dans le domaine '{domaine}'.")
+
 
