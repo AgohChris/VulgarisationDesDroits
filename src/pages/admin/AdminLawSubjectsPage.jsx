@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -14,69 +13,77 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { fetchSubjects, addSubject, updateSubject, deleteSubject } from '@/api/sujetDroit';
+import { fetchCategories } from '@/api/categorieDroit';
 
 const AdminLawSubjectsPage = () => {
-  const [subjects, setSubjects] = useState(() => {
-    const savedSubjects = localStorage.getItem('lawSubjects');
-    return savedSubjects ? JSON.parse(savedSubjects) : [
-      { id: 1, name: "Contrat de travail", categoryId: 3, description: "Formalisation de la relation de travail." },
-      { id: 2, name: "Divorce par consentement mutuel", categoryId: 1, description: "Procédure de séparation à l'amiable." },
-      { id: 3, name: "Vol qualifié", categoryId: 2, description: "Infraction pénale avec circonstances aggravantes." },
-    ];
-  });
-
+  const [subjects, setSubjects] = useState([]);
   const [lawCategories, setLawCategories] = useState([]);
-  useEffect(() => {
-    const savedCategories = localStorage.getItem('lawCategories');
-    if (savedCategories) {
-      setLawCategories(JSON.parse(savedCategories));
-    } else {
-      setLawCategories([ 
-        { id: 1, name: "Droit Civil" },
-        { id: 2, name: "Droit Pénal" },
-        { id: 3, name: "Droit du Travail" },
-      ]);
-    }
-  }, []);
-
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentSubject, setCurrentSubject] = useState(null);
   const [subjectName, setSubjectName] = useState('');
   const [subjectDescription, setSubjectDescription] = useState('');
+  const [subjectComplement, setSubjectComplement] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
+  // Charger les catégories de droit
   useEffect(() => {
-    localStorage.setItem('lawSubjects', JSON.stringify(subjects));
-  }, [subjects]);
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+        console.log("Catégories récupérées depuis l'API :", data); // Debug
+        setLawCategories(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des catégories :", error);
+        toast({ title: "Erreur", description: "Impossible de charger les catégories de droit.", variant: "destructive" });
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  // Charger les sujets de droit
+  useEffect(() => {
+    const loadSubjects = async () => {
+      try {
+        const data = await fetchSubjects();
+        console.log("Sujets récupérés depuis l'API :", data); // Debug
+        setSubjects(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des sujets :", error);
+        toast({ title: "Erreur", description: "Impossible de charger les sujets.", variant: "destructive" });
+      }
+    };
+
+    loadSubjects();
+  }, []);
 
   const getCategoryNameById = (categoryId) => {
     const category = lawCategories.find(cat => cat.id === categoryId);
-    return category ? category.name : 'Non spécifiée';
+    return category ? category.nom : 'Non spécifiée';
   };
 
   const filteredSubjects = subjects.map(subject => ({
     ...subject,
-    categoryName: getCategoryNameById(subject.categoryId)
+    categoryName: getCategoryNameById(subject.categorie_droit_id)
   })).filter(subject =>
-    subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    subject.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    subject.intitule.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    subject.descriptif.toLowerCase().includes(searchTerm.toLowerCase()) ||
     subject.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const openModal = (subject = null) => {
     setCurrentSubject(subject);
-    setSubjectName(subject ? subject.name : '');
-    setSubjectDescription(subject ? subject.description : '');
-    setSelectedCategoryId(subject ? String(subject.categoryId) : '');
+    setSubjectName(subject ? subject.intitule : '');
+    setSubjectDescription(subject ? subject.descriptif : '');
+    setSubjectComplement(subject ? subject.complement : ''); // Ajout de complement
+    setSelectedCategoryId(subject ? String(subject.categorie_droit_id) : '');
     setIsModalOpen(true);
   };
 
@@ -85,50 +92,46 @@ const AdminLawSubjectsPage = () => {
     setCurrentSubject(null);
     setSubjectName('');
     setSubjectDescription('');
+    setSubjectComplement(''); // Réinitialisation de complement
     setSelectedCategoryId('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!subjectName.trim() || !selectedCategoryId) {
-      toast({
-        title: "Champs Requis",
-        description: "Le nom du sujet et la catégorie sont requis.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const subjectData = { 
-        name: subjectName, 
-        description: subjectDescription, 
-        categoryId: parseInt(selectedCategoryId) 
+    const subjectData = {
+      intitule: subjectName,
+      descriptif: subjectDescription,
+      complement: subjectComplement, // Ajout de complement
+      categorie_droit_id: selectedCategoryId,
     };
 
-    if (currentSubject) {
-      setSubjects(subjects.map(item =>
-        item.id === currentSubject.id ? { ...item, ...subjectData } : item
-      ));
-      toast({ title: "Sujet Modifié", description: `Le sujet "${subjectName}" a été mis à jour.` });
-    } else {
-      const newSubject = {
-        id: Date.now(),
-        ...subjectData
-      };
-      setSubjects([newSubject, ...subjects]);
-      toast({ title: "Sujet Ajouté", description: `Le sujet "${subjectName}" a été ajouté.` });
+    try {
+      if (currentSubject) {
+        await updateSubject(currentSubject.id, subjectData);
+        toast({ title: "Sujet Modifié", description: `Le sujet "${subjectName}" a été mis à jour.` });
+      } else {
+        await addSubject(subjectData);
+        toast({ title: "Sujet Ajouté", description: `Le sujet "${subjectName}" a été ajouté.` });
+      }
+      setIsModalOpen(false);
+      const updatedSubjects = await fetchSubjects();
+      setSubjects(updatedSubjects);
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement :", error.response?.data || error.message); // Debug
+      toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
     }
-    closeModal();
   };
 
-  const handleDelete = (id, name) => {
+  const handleDelete = async (id, name) => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer le sujet "${name}" ?`)) {
-      setSubjects(subjects.filter(item => item.id !== id));
-      toast({
-        title: "Sujet Supprimé",
-        description: `Le sujet "${name}" a été supprimé.`,
-        variant: "destructive",
-      });
+      try {
+        await deleteSubject(id);
+        toast({ title: "Sujet Supprimé", description: `Le sujet "${name}" a été supprimé.`, variant: "destructive" });
+        const updatedSubjects = await fetchSubjects();
+        setSubjects(updatedSubjects);
+      } catch (error) {
+        toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
+      }
     }
   };
 
@@ -177,25 +180,27 @@ const AdminLawSubjectsPage = () => {
                       <TableHead className="w-[250px]">Nom du Sujet</TableHead>
                       <TableHead className="w-[200px]">Catégorie</TableHead>
                       <TableHead>Description</TableHead>
+                      <TableHead>Complément</TableHead> {/* Nouvelle colonne */}
                       <TableHead className="w-[150px] text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredSubjects.map((subject) => (
                       <TableRow key={subject.id}>
-                        <TableCell className="font-medium">{subject.name}</TableCell>
+                        <TableCell className="font-medium">{subject.intitule}</TableCell>
                         <TableCell>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                             <Library className="mr-1.5 h-3 w-3" />
                             {subject.categoryName}
                           </span>
                         </TableCell>
-                        <TableCell>{subject.description || '-'}</TableCell>
+                        <TableCell>{subject.descriptif || '-'}</TableCell>
+                        <TableCell>{subject.complement || '-'}</TableCell> {/* Affichage de complement */}
                         <TableCell className="text-right space-x-2">
                           <Button variant="outline" size="icon" onClick={() => openModal(subject)} className="text-blue-600 hover:text-blue-700">
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="icon" onClick={() => handleDelete(subject.id, subject.name)} className="text-red-600 hover:text-red-700">
+                          <Button variant="outline" size="icon" onClick={() => handleDelete(subject.id, subject.intitule)} className="text-red-600 hover:text-red-700">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -228,6 +233,9 @@ const AdminLawSubjectsPage = () => {
                 required
               />
             </div>
+
+        
+
             <div>
               <Label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-1">Catégorie de Droit</Label>
               <Select onValueChange={setSelectedCategoryId} value={selectedCategoryId}>
@@ -235,9 +243,13 @@ const AdminLawSubjectsPage = () => {
                   <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  {lawCategories.map(cat => (
-                    <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
-                  ))}
+                  {lawCategories.length > 0 ? (
+                    lawCategories.map(cat => (
+                      <SelectItem key={cat.id} value={String(cat.id)}>{cat.nom}</SelectItem>
+                    ))
+                  ) : (
+                    <p className="text-center text-gray-500">Aucune catégorie disponible</p>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -248,6 +260,16 @@ const AdminLawSubjectsPage = () => {
                 value={subjectDescription}
                 onChange={(e) => setSubjectDescription(e.target.value)}
                 placeholder="Décrivez brièvement le sujet de droit."
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="subjectComplement" className="block text-sm font-medium text-gray-700 mb-1">Complément (Optionnel)</Label>
+              <Textarea
+                id="subjectComplement"
+                value={subjectComplement}
+                onChange={(e) => setSubjectComplement(e.target.value)}
+                placeholder="Ajoutez des informations complémentaires sur le sujet."
                 rows={3}
               />
             </div>

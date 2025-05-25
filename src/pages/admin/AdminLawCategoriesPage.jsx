@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -14,21 +13,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { fetchCategories, addCategory, updateCategory, deleteCategory } from '@/api/categorieDroit';
 
 const AdminLawCategoriesPage = () => {
-  const [categories, setCategories] = useState(() => {
-    const savedCategories = localStorage.getItem('lawCategories');
-    return savedCategories ? JSON.parse(savedCategories) : [
-      { id: 1, name: "Droit Civil", description: "Règles relatives aux rapports entre les personnes (physiques ou morales)." },
-      { id: 2, name: "Droit Pénal", description: "Ensemble des règles de conduite imposées par la société aux citoyens sous peine de sanctions." },
-      { id: 3, name: "Droit du Travail", description: "Régit les relations entre employeurs et salariés." },
-    ];
-  });
-
+  const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [categoryName, setCategoryName] = useState('');
@@ -36,22 +27,37 @@ const AdminLawCategoriesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
+  // Charger les catégories au montage du composant
   useEffect(() => {
-    localStorage.setItem('lawCategories', JSON.stringify(categories));
-  }, [categories]);
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+        console.log("Catégories récupérées :", data); // Debug
+        setCategories(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des catégories :", error);
+        toast({ title: "Erreur", description: "Impossible de charger les catégories.", variant: "destructive" });
+      }
+    };
 
+    loadCategories();
+  }, []);
+
+  // Filtrer les catégories en fonction du terme de recherche
   const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    category.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     category.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Ouvrir la modale pour ajouter ou modifier une catégorie
   const openModal = (category = null) => {
     setCurrentCategory(category);
-    setCategoryName(category ? category.name : '');
+    setCategoryName(category ? category.nom : '');
     setCategoryDescription(category ? category.description : '');
     setIsModalOpen(true);
   };
 
+  // Fermer la modale
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentCategory(null);
@@ -59,42 +65,40 @@ const AdminLawCategoriesPage = () => {
     setCategoryDescription('');
   };
 
-  const handleSubmit = (e) => {
+  // Ajouter ou modifier une catégorie
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!categoryName.trim()) {
-      toast({
-        title: "Champ Requis",
-        description: "Le nom de la catégorie ne peut pas être vide.",
-        variant: "destructive",
-      });
-      return;
-    }
+    const categoryData = { nom: categoryName, description: categoryDescription };
 
-    if (currentCategory) {
-      setCategories(categories.map(item =>
-        item.id === currentCategory.id ? { ...item, name: categoryName, description: categoryDescription } : item
-      ));
-      toast({ title: "Catégorie Modifiée", description: `La catégorie "${categoryName}" a été mise à jour.` });
-    } else {
-      const newCategory = {
-        id: Date.now(),
-        name: categoryName,
-        description: categoryDescription,
-      };
-      setCategories([newCategory, ...categories]);
-      toast({ title: "Catégorie Ajoutée", description: `La catégorie "${categoryName}" a été ajoutée.` });
+    try {
+      if (currentCategory) {
+        await updateCategory(currentCategory.id, categoryData);
+        toast({ title: "Catégorie Modifiée", description: `La catégorie "${categoryName}" a été mise à jour.` });
+      } else {
+        await addCategory(categoryData);
+        toast({ title: "Catégorie Ajoutée", description: `La catégorie "${categoryName}" a été ajoutée.` });
+      }
+      setIsModalOpen(false);
+      const updatedCategories = await fetchCategories();
+      setCategories(updatedCategories);
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement :", error.response?.data || error.message); // Debug
+      toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
     }
-    closeModal();
   };
 
-  const handleDelete = (id, name) => {
+  // Supprimer une catégorie
+  const handleDelete = async (id, name) => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${name}" ?`)) {
-      setCategories(categories.filter(item => item.id !== id));
-      toast({
-        title: "Catégorie Supprimée",
-        description: `La catégorie "${name}" a été supprimée.`,
-        variant: "destructive",
-      });
+      try {
+        await deleteCategory(id);
+        toast({ title: "Catégorie Supprimée", description: `La catégorie "${name}" a été supprimée.`, variant: "destructive" });
+        const updatedCategories = await fetchCategories();
+        setCategories(updatedCategories);
+      } catch (error) {
+        console.error("Erreur lors de la suppression :", error.response?.data || error.message); // Debug
+        toast({ title: "Erreur", description: "Une erreur est survenue lors de la suppression.", variant: "destructive" });
+      }
     }
   };
 
@@ -148,13 +152,13 @@ const AdminLawCategoriesPage = () => {
                   <TableBody>
                     {filteredCategories.map((category) => (
                       <TableRow key={category.id}>
-                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell className="font-medium">{category.nom}</TableCell>
                         <TableCell>{category.description || '-'}</TableCell>
                         <TableCell className="text-right space-x-2">
                           <Button variant="outline" size="icon" onClick={() => openModal(category)} className="text-blue-600 hover:text-blue-700">
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="icon" onClick={() => handleDelete(category.id, category.name)} className="text-red-600 hover:text-red-700">
+                          <Button variant="outline" size="icon" onClick={() => handleDelete(category.id, category.nom)} className="text-red-600 hover:text-red-700">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </TableCell>
