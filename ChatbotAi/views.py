@@ -58,22 +58,35 @@ class ChatbotInteractionsCountAPIView(APIView):
             print(f"Erreur dans la View ChatBotInteractionCount... : {e}")
             return Response({"error": "Errur interne sur le serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-    
+
+class NewsletterAbonneeCountAPIView(APIView):
+    def get(self,  request):
+        try:
+            subscriber_count = NewsletterAbonnee.objects.count()
+            return Response({"subscriber_count":subscriber_count}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Erreur dans la View NewsletterAbonneeCount... : {e}")
+            return Response({"error": "Errur interne sur le serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
 # Api pour les Abonnées à la newsletter
 class NewsletterAbonneeView(APIView):
-    def get(self, request):
-        abonnes = NewsletterAbonnee.objects.filter(is_active=True)
-        serializer = NewsletterAbonneeSerializer(abonnes, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-
     def post(self, request):
         serializer = NewsletterAbonneeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NewsletterListeAbonmeeView(APIView):
+    def get(self, request):
+        abonnes = NewsletterAbonnee.objects.filter(is_active=True)
+        serializer = NewsletterAbonneeSerializer(abonnes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
 
 # Api pour le désabonnement des utilisateurs 
@@ -93,11 +106,6 @@ class NewsletterDesabonnementView(APIView):
 
 # Api poour l'enregistrement des newsletters 
 class NewsletterMessageView(APIView):
-    def get(self, request):
-        messages = NewsletterMessage.objects.all()
-        serializer = NewsletterMessageSerializer(messages, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
     def post(self, request):
         print("Données reçues :", request.data)  # Log des données reçues
         serializer = NewsletterMessageSerializer(data=request.data)
@@ -108,11 +116,19 @@ class NewsletterMessageView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class NewsletterMessageListeView(APIView):
+    def get(self, request):
+        messages = NewsletterMessage.objects.all()
+        serializer = NewsletterMessageSerializer(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # Api pour l'envoie des newsletters aux abonnées
 class SendNewsletterAPIView(APIView):
     def post(self, request, pk):
         try:
-            message = NewsletterMessage.objects.get(pk=pk, is_sent=False)
+            message = NewsletterMessage.objects.get(pk=pk, statut='brouillon')
             abonnés = NewsletterAbonnee.objects.filter(is_active=True)
 
             for abonné in abonnés:
@@ -123,7 +139,7 @@ class SendNewsletterAPIView(APIView):
                     recipient_list=[abonné.email],
                 )
 
-            message.is_sent = True
+            message.statut = 'envoyé'
             message.date_envoie = now()
             message.save()
 
@@ -132,7 +148,7 @@ class SendNewsletterAPIView(APIView):
             return Response({"error": "Message introuvable ou déjà envoyé."}, status=status.HTTP_404_NOT_FOUND)
 
 
-# Api pour lister les newsletter
+# Api pour modifier les newsletter
 class NewsletterMessageUpdateView(APIView):
     def get_object(self, pk):
         try:
@@ -152,11 +168,16 @@ class NewsletterMessageUpdateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
-    
 # Api pour la suppression de Message de la newsletter
 class NewsletterMessageDeleteView(APIView):
+    def get_object(self, pk):
+        try:
+            return NewsletterMessage.objects.get(pk=pk)
+        except NewsletterMessage.DoesNotExist:
+            return None
+        
     def delete(self, request, pk):
-        message = NewsletterMessageUpdateView.get_object(pk)
+        message = self.get_object(pk)
         if not message:
             return Response({"error": "Message introuvable"}, status=status.HTTP_404_NOT_FOUND)
         message.delete()
