@@ -59,6 +59,7 @@ class ChatbotInteractionsCountAPIView(APIView):
             return Response({"error": "Errur interne sur le serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
+# APi pour compter les Newsletters
 class NewsletterAbonneeCountAPIView(APIView):
     def get(self,  request):
         try:
@@ -168,6 +169,7 @@ class NewsletterMessageUpdateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
+
 # Api pour la suppression de Message de la newsletter
 class NewsletterMessageDeleteView(APIView):
     def get_object(self, pk):
@@ -182,5 +184,3 @@ class NewsletterMessageDeleteView(APIView):
             return Response({"error": "Message introuvable"}, status=status.HTTP_404_NOT_FOUND)
         message.delete()
         return Response({"message": "Message supprimé avec succès"}, status=status.HTTP_204_NO_CONTENT)
-    
-
