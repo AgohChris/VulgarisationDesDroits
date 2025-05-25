@@ -77,3 +77,14 @@ export const sendNewsletter = async (id) => {
     throw error;
   }
 };
+
+
+export const fetchSubscriberCount = async () => {
+  try {
+    const response = await api.get('/newsletter/abonnee/count/');
+    return response.data.subscriber_count;
+  } catch (error) {
+    console.error("Erreur lors de la récupération du nombre d'abonnés :", error.response?.data || error.message);
+    throw error;
+  }
+};

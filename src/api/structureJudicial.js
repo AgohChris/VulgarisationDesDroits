@@ -41,3 +41,13 @@ export const deleteStructure = async (id) => {
     throw error;
   }
 };
+
+export const fetchJudicialSystemCount = async () => {
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/structure-judiciaire/count`);
+    return response.data.total; // Retourne uniquement le nombre
+  } catch (error) {
+    console.error("Erreur lors de la récupération du nombre de structures judiciaires :", error);
+    throw error;
+  }
+};

@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Users, FileText, BookOpen, ListTree, Mail, MessageCircle, Download, FileSpreadsheet, FileType, FileJson, Scale, Library, ListChecks } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import axios from 'axios'; // Importer Axios pour les appels API
+import { fetchJudicialSystemCount } from '@/api/structureJudicial';
 
 import DashboardStats from '@/components/admin/dashboard/DashboardStats';
 import DailyVisitorsChart from '@/components/admin/dashboard/DailyVisitorsChart';
@@ -37,15 +38,20 @@ const AdminDashboardPage = () => {
     const fetchStats = async () => {
       try {
         // Récupérer le nombre d'interactions depuis le backend
-        const response = await axios.get('http://127.0.0.1:8080/api/chatbot/interactions/count/');
-        const interactionCount = response.data.interaction_count;
+        const interactionResponse = await axios.get('http://127.0.0.1:8080/api/chatbot/interactions/count/');
+        const interactionCount = interactionResponse.data.interaction_count;
+
+        // Récupérer le nombre d'abonnés à la newsletter depuis le backend
+        const newsletterResponse = await axios.get('http://127.0.0.1:8080/api/newsletter/abonnee/count/');
+        const newsletterSubscribersCount = newsletterResponse.data.subscriber_count;
+        
+        const judicialSystemCount = await fetchJudicialSystemCount();
+        console.log("Nombre de structures judiciaires :", judicialSystemCount); // Debug
 
         // Récupérer d'autres statistiques depuis localStorage
         const glossaryCount = JSON.parse(localStorage.getItem('glossaryTerms') || '[]').length;
         const thematicsCount = JSON.parse(localStorage.getItem('thematicItems') || '[]').length;
         const resourcesCount = JSON.parse(localStorage.getItem('resourceItems') || '[]').length;
-        const newsletterSubscribersCount = JSON.parse(localStorage.getItem('adminSubscribers') || '[]').length;
-        const judicialSystemCount = JSON.parse(localStorage.getItem('judicialSystemEntries') || '[]').length;
         const lawCategoriesCount = JSON.parse(localStorage.getItem('lawCategories') || '[]').length;
         const lawSubjectsCount = JSON.parse(localStorage.getItem('lawSubjects') || '[]').length;
 
