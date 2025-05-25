@@ -9,8 +9,8 @@ import axios from "axios";
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?", sender: "bot" }
-  ]);
+    { id: 1, text: "Bonjour, Je suis miss Ella, Comment puis-je vous aider aujourd'hui ?", sender: "bot" }
+  ]); 
   const [inputValue, setInputValue] = useState("");
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const [sessionId, setSessionId] = useState(null); // ID de session

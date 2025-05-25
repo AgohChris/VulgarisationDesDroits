@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -19,37 +18,59 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge"; 
-
-const initialSubscribers = [
-  { id: 1, email: 'jean.dupont@example.com', dateSubscribed: '2024-03-15' },
-  { id: 2, email: 'marie.curie@example.com', dateSubscribed: '2024-03-20' },
-  { id: 3, email: 'pierre.martin@example.com', dateSubscribed: '2024-04-01' },
-];
+import {
+  fetchNewsletters,
+  createNewsletter,
+  updateNewsletter,
+  deleteNewsletter,
+  sendNewsletter,
+  fetchSubscribers,
+} from '@/api/newsletter';
 
 const AdminNewsletterPage = () => {
-  const [subscribers, setSubscribers] = useState(initialSubscribers);
+  const [subscribers, setSubscribers] = useState([]);
   const [subscriberSearchTerm, setSubscriberSearchTerm] = useState('');
-  
-  const [newsletters, setNewsletters] = useState(() => {
-    const savedNewsletters = localStorage.getItem('adminNewsletters');
-    return savedNewsletters ? JSON.parse(savedNewsletters) : [];
-  });
-
+  const [newsletters, setNewsletters] = useState([]);
   const [currentNewsletter, setCurrentNewsletter] = useState(null); 
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-
   const { toast } = useToast();
   const [isConfirmSendModalOpen, setIsConfirmSendModalOpen] = useState(false);
   const [newsletterToSend, setNewsletterToSend] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [newsletterToView, setNewsletterToView] = useState(null);
 
-
   useEffect(() => {
-    localStorage.setItem('adminNewsletters', JSON.stringify(newsletters));
-  }, [newsletters]);
+    const loadNewsletters = async () => {
+      try {
+        const data = await fetchNewsletters();
+        setNewsletters(data);
+      } catch (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les newsletters.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    const loadSubscribers = async () => {
+      try {
+        const data = await fetchSubscribers();
+        setSubscribers(data);
+      } catch (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les abonnés.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    loadNewsletters();
+    loadSubscribers();
+  }, []);
 
   const filteredSubscribers = subscribers.filter(sub =>
     sub.email.toLowerCase().includes(subscriberSearchTerm.toLowerCase())
@@ -62,7 +83,7 @@ const AdminNewsletterPage = () => {
     setIsEditing(false);
   };
 
-  const handleSaveNewsletter = (e) => {
+  const handleSaveNewsletter = async (e) => {
     e.preventDefault();
     if (!subject.trim() || !body.trim()) {
       toast({
@@ -73,93 +94,54 @@ const AdminNewsletterPage = () => {
       return;
     }
 
-    if (isEditing && currentNewsletter) {
-      setNewsletters(newsletters.map(nl => 
-        nl.id === currentNewsletter.id ? { ...nl, subject, body, updatedAt: new Date().toISOString() } : nl
-      ));
-      toast({ title: "Brouillon mis à jour", description: `Le brouillon "${subject}" a été sauvegardé.` });
-    } else {
-      const newNewsletter = {
-        id: Date.now(),
-        subject,
-        body,
-        status: 'draft', 
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setNewsletters([newNewsletter, ...newsletters]);
-      toast({ title: "Brouillon sauvegardé", description: `Le brouillon "${subject}" a été créé.` });
+    const payload = { objet: subject, contenue: body, statut: 'brouillon' };
+
+    try {
+      if (isEditing && currentNewsletter) {
+        const updatedNewsletter = await updateNewsletter(currentNewsletter.id, payload);
+        setNewsletters(newsletters.map(nl => (nl.id === currentNewsletter.id ? updatedNewsletter : nl)));
+        toast({ title: "Newsletter mise à jour", description: "Le brouillon a été modifié." });
+      } else {
+        const newNewsletter = await createNewsletter(payload);
+        setNewsletters([newNewsletter, ...newsletters]);
+        toast({ title: "Newsletter créée", description: "Le brouillon a été créé." });
+      }
+      resetForm();
+    } catch (error) {
+      toast({ title: "Erreur", description: "La sauvegarde a échoué.", variant: "destructive" });
     }
-    resetForm();
   };
 
-  const handleEditNewsletter = (newsletter) => {
-    if (newsletter.status === 'sent') {
-        toast({ title: "Non modifiable", description: "Les newsletters envoyées ne peuvent pas être modifiées.", variant: "destructive"});
-        return;
+  const handleSendNewsletter = async (id) => {
+    try {
+      await sendNewsletter(id);
+      setNewsletters(newsletters.map(nl => (nl.id === id ? { ...nl, statut: 'envoyée', date_envoie: new Date().toISOString() } : nl)));
+      toast({ title: "Newsletter envoyée", description: "La newsletter a été envoyée avec succès." });
+    } catch (error) {
+      console.error("Erreur lors de l'envoi :", error);
+      toast({ title: "Erreur", description: "L'envoi a échoué. Veuillez réessayer.", variant: "destructive" });
     }
-    setCurrentNewsletter(newsletter);
-    setSubject(newsletter.subject);
-    setBody(newsletter.body);
-    setIsEditing(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-  
-  const handleDuplicateNewsletter = (newsletter) => {
-    setSubject(`Copie de ${newsletter.subject}`);
-    setBody(newsletter.body);
-    setCurrentNewsletter(null);
-    setIsEditing(false);
-    toast({ title: "Newsletter dupliquée", description: `Contenu copié dans le formulaire. Sauvegardez comme nouveau brouillon.`});
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const openSendConfirmModal = (newsletter) => {
-    if (newsletter.status === 'sent') {
-        toast({ title: "Déjà envoyée", description: "Cette newsletter a déjà été envoyée.", variant: "default"});
-        return;
+  const handleDeleteNewsletter = async (id) => {
+    try {
+      await deleteNewsletter(id);
+      setNewsletters(newsletters.filter(nl => nl.id !== id));
+      toast({ title: "Newsletter supprimée", description: "La newsletter a été supprimée avec succès." });
+    } catch (error) {
+      toast({ title: "Erreur", description: "La suppression a échoué.", variant: "destructive" });
     }
-    setNewsletterToSend(newsletter);
-    setIsConfirmSendModalOpen(true);
-  };
-
-  const confirmSendNewsletter = () => {
-    if (!newsletterToSend) return;
-
-    setNewsletters(newsletters.map(nl => 
-      nl.id === newsletterToSend.id ? { ...nl, status: 'sent', sentAt: new Date().toISOString() } : nl
-    ));
-    
-    toast({
-      title: "Newsletter (simulation) Envoyée!",
-      description: `La newsletter "${newsletterToSend.subject}" a été "envoyée" à ${subscribers.length} abonnés.`,
-    });
-    
-    setIsConfirmSendModalOpen(false);
-    setNewsletterToSend(null);
-    resetForm(); 
-  };
-  
-  const handleDeleteNewsletter = (id, nlSubject) => {
-     if (window.confirm(`Êtes-vous sûr de vouloir supprimer la newsletter "${nlSubject}" ?`)) {
-        setNewsletters(newsletters.filter(nl => nl.id !== id));
-        toast({
-            title: "Newsletter supprimée",
-            description: `La newsletter "${nlSubject}" a été supprimée.`,
-            variant: "destructive"
-        });
-     }
   };
 
   const handleDeleteSubscriber = (id, email) => {
-     if (window.confirm(`Êtes-vous sûr de vouloir désinscrire "${email}" ?`)) {
-        setSubscribers(subscribers.filter(sub => sub.id !== id));
-        toast({
-            title: "Abonné supprimé",
-            description: `L'abonné "${email}" a été supprimé de la liste.`,
-            variant: "destructive"
-        });
-     }
+    if (window.confirm(`Êtes-vous sûr de vouloir désinscrire "${email}" ?`)) {
+      setSubscribers(subscribers.filter(sub => sub.id !== id));
+      toast({
+        title: "Abonné supprimé",
+        description: `L'abonné "${email}" a été supprimé de la liste.`,
+        variant: "destructive",
+      });
+    }
   };
 
   const openViewModal = (newsletter) => {
@@ -167,24 +149,16 @@ const AdminNewsletterPage = () => {
     setIsViewModalOpen(true);
   };
 
+  const handleEditNewsletter = (newsletter) => {
+    setCurrentNewsletter(newsletter);
+    setSubject(newsletter.objet);
+    setBody(newsletter.contenue);
+    setIsEditing(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="container mx-auto py-8 space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex justify-between items-center"
-      >
-        <h1 className="text-3xl font-bold text-gray-800 flex items-center">
-          <Mail className="mr-3 h-8 w-8 text-blue-600" /> Gestion des Newsletters
-        </h1>
-        {isEditing && (
-            <Button variant="outline" onClick={resetForm} className="text-sm">
-                Annuler la modification
-            </Button>
-        )}
-      </motion.div>
-
       {/* Section de Composition/Modification */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -194,7 +168,7 @@ const AdminNewsletterPage = () => {
         <Card className="shadow-xl">
           <CardHeader>
             <CardTitle className="text-2xl text-gray-700">{isEditing ? "Modifier le Brouillon" : "Composer une Newsletter"}</CardTitle>
-            <CardDescription>{isEditing ? `Modification du brouillon: "${currentNewsletter?.subject}"` : "Créez un nouveau brouillon pour votre newsletter."}</CardDescription>
+            <CardDescription>{isEditing ? `Modification du brouillon: "${currentNewsletter?.objet}"` : "Créez un nouveau brouillon pour votre newsletter."}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSaveNewsletter} className="space-y-6">
@@ -247,38 +221,33 @@ const AdminNewsletterPage = () => {
             {newsletters.length > 0 ? (
               <div className="space-y-4">
                 {newsletters.map(nl => (
-                  <Card key={nl.id} className={`border-l-4 ${nl.status === 'draft' ? 'border-yellow-400' : 'border-green-500'} bg-gray-50/50`}>
+                  <Card key={nl.id} className={`border-l-4 ${nl.statut === 'brouillon' ? 'border-yellow-400' : 'border-green-500'} bg-gray-50/50`}>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg">{nl.subject}</CardTitle>
-                        <Badge variant={nl.status === 'draft' ? 'secondary' : 'default'} className={nl.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}>
-                          {nl.status === 'draft' ? 'Brouillon' : 'Envoyée'}
+                        <CardTitle className="text-lg">{nl.objet}</CardTitle>
+                        <Badge variant={nl.statut === 'brouillon' ? 'secondary' : 'default'} className={nl.statut === 'brouillon' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}>
+                          {nl.statut === 'brouillon' ? 'Brouillon' : 'Envoyée'}
                         </Badge>
                       </div>
                       <p className="text-xs text-gray-500">
-                        {nl.status === 'sent' && nl.sentAt ? `Envoyée le: ${new Date(nl.sentAt).toLocaleString()}` : `Dernière modif.: ${new Date(nl.updatedAt).toLocaleString()}`}
+                        {nl.statut === 'envoyée' && nl.date_envoie ? `Envoyée le: ${new Date(nl.date_envoie).toLocaleString()}` : `Dernière modif.: ${new Date(nl.updated_at).toLocaleString()}`}
                       </p>
                     </CardHeader>
                     <CardFooter className="flex justify-end space-x-2 pt-2 pb-3">
                       <Button variant="outline" size="sm" onClick={() => openViewModal(nl)} title="Voir">
                         <Eye className="h-4 w-4" />
                       </Button>
-                      {nl.status === 'draft' && (
+                      {nl.statut === 'brouillon' && (
                         <>
                           <Button variant="outline" size="sm" onClick={() => handleEditNewsletter(nl)} className="text-blue-600 border-blue-600 hover:bg-blue-50" title="Modifier">
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="default" size="sm" onClick={() => openSendConfirmModal(nl)} className="bg-blue-600 hover:bg-blue-700" title="Envoyer">
+                          <Button variant="default" size="sm" onClick={() => handleSendNewsletter(nl.id)} className="bg-blue-600 hover:bg-blue-700" title="Envoyer">
                             <Send className="h-4 w-4" />
                           </Button>
                         </>
                       )}
-                       {nl.status === 'sent' && (
-                         <Button variant="outline" size="sm" onClick={() => handleDuplicateNewsletter(nl)} className="text-purple-600 border-purple-600 hover:bg-purple-50" title="Dupliquer">
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                       )}
-                      <Button variant="destructive" size="sm" onClick={() => handleDeleteNewsletter(nl.id, nl.subject)} title="Supprimer">
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteNewsletter(nl.id)} title="Supprimer">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </CardFooter>
@@ -291,7 +260,7 @@ const AdminNewsletterPage = () => {
           </CardContent>
         </Card>
       </motion.div>
-      
+
       {/* Section Liste des Abonnés */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -303,7 +272,7 @@ const AdminNewsletterPage = () => {
             <CardTitle className="text-xl text-gray-700 flex items-center">
               <Users className="mr-2 h-6 w-6 text-green-500" /> Liste des Abonnés ({filteredSubscribers.length})
             </CardTitle>
-             <div className="mt-4 relative">
+            <div className="mt-4 relative">
               <Input 
                 type="text"
                 placeholder="Rechercher un abonné..."
@@ -321,7 +290,7 @@ const AdminNewsletterPage = () => {
                   <li key={sub.id} className="flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors">
                     <div>
                       <p className="text-sm font-medium text-gray-800">{sub.email}</p>
-                      <p className="text-xs text-gray-500">Inscrit le: {new Date(sub.dateSubscribed).toLocaleDateString()}</p>
+                      <p className="text-xs text-gray-500">Inscrit le: {new Date(sub.date_inscription).toLocaleDateString()}</p>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => handleDeleteSubscriber(sub.id, sub.email)} className="text-red-500 hover:text-red-700">
                       <Trash2 className="h-4 w-4" />
@@ -335,49 +304,32 @@ const AdminNewsletterPage = () => {
           </CardContent>
         </Card>
       </motion.div>
-      
-      {/* Modale de confirmation d'envoi */}
-      <Dialog open={isConfirmSendModalOpen} onOpenChange={setIsConfirmSendModalOpen}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Confirmer l'envoi</DialogTitle>
-            </DialogHeader>
-            <div className="py-4">
-                <p>Êtes-vous sûr de vouloir envoyer la newsletter "{newsletterToSend?.subject}" à {subscribers.length} abonnés ?</p>
-                <p className="text-sm text-muted-foreground mt-2">Cette action est une simulation et n'enverra pas de réels e-mails.</p>
-            </div>
-            <DialogFooter>
-                <DialogClose asChild>
-                    <Button type="button" variant="outline" onClick={() => setNewsletterToSend(null)}>Annuler</Button>
-                </DialogClose>
-                <Button onClick={confirmSendNewsletter} className="bg-blue-600 hover:bg-blue-700">Confirmer et Envoyer</Button>
-            </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
-      {/* Modale de visualisation de newsletter */}
+      {/* Modal d'Aperçu de la Newsletter */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
         <DialogContent className="sm:max-w-2xl max-h-[80vh]">
-            <DialogHeader>
-                <DialogTitle className="text-xl">Aperçu: {newsletterToView?.subject}</DialogTitle>
-                <DialogDescription>
-                    Statut: <Badge variant={newsletterToView?.status === 'draft' ? 'secondary' : 'default'} className={`ml-1 ${newsletterToView?.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>{newsletterToView?.status === 'draft' ? 'Brouillon' : 'Envoyée'}</Badge>
-                    {newsletterToView?.status === 'sent' && newsletterToView?.sentAt && <span className="text-xs ml-2">Envoyée le: {new Date(newsletterToView.sentAt).toLocaleString()}</span>}
-                    {newsletterToView?.status === 'draft' && newsletterToView?.updatedAt && <span className="text-xs ml-2">Dernière modif.: {new Date(newsletterToView.updatedAt).toLocaleString()}</span>}
-                </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 max-h-[60vh] overflow-y-auto prose prose-sm dark:prose-invert">
-                <h3 className="text-lg font-semibold mb-2">Sujet: {newsletterToView?.subject}</h3>
-                <div dangerouslySetInnerHTML={{ __html: newsletterToView?.body.replace(/\n/g, '<br />') || '' }} />
-            </div>
-            <DialogFooter>
-                <DialogClose asChild>
-                    <Button type="button" variant="outline">Fermer</Button>
-                </DialogClose>
-            </DialogFooter>
+          <DialogHeader>
+            <DialogTitle className="text-xl">Aperçu: {newsletterToView?.objet}</DialogTitle>
+            <DialogDescription>
+              Statut: <Badge variant={newsletterToView?.statut === 'brouillon' ? 'secondary' : 'default'} className={`ml-1 ${newsletterToView?.statut === 'brouillon' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                {newsletterToView?.statut === 'brouillon' ? 'Brouillon' : 'Envoyée'}
+              </Badge>
+              {newsletterToView?.statut === 'envoyée' && newsletterToView?.date_envoie && (
+                <span className="text-xs ml-2">Envoyée le: {new Date(newsletterToView.date_envoie).toLocaleString()}</span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 max-h-[60vh] overflow-y-auto prose prose-sm dark:prose-invert">
+            <h3 className="text-lg font-semibold mb-2">Sujet: {newsletterToView?.objet}</h3>
+            <div dangerouslySetInnerHTML={{ __html: newsletterToView?.contenue.replace(/\n/g, '<br />') || '' }} />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">Fermer</Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 };
