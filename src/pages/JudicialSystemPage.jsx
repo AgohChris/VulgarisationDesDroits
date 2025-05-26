@@ -90,7 +90,7 @@ const JudicialSystemPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <p className="text-gray-600 text-sm">{entry.exemple}</p> {/* Ajoutez l'exemple */}
+                  <p className="text-gray-600 text-sm">exemple : {entry.exemple}</p> {/* Ajoutez l'exemple */}
                 </CardContent>
               </Card>
             ))}

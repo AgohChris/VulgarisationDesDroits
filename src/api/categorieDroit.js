@@ -51,3 +51,13 @@ export const fetchCategoryCount = async () => {
     throw error;
   }
 };
+
+export const fetchCategoriesWithSubjects = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/categorie-droit/avec-sujets');
+    return response.data.data; // Retourne les catégories avec leurs sujets
+  } catch (error) {
+    console.error("Erreur lors de la récupération des catégories avec sujets :", error);
+    throw error;
+  }
+};
