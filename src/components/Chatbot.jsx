@@ -13,7 +13,7 @@ const Chatbot = () => {
   ]); 
   const [inputValue, setInputValue] = useState("");
   const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const [sessionId, setSessionId] = useState(null); // ID de session
+  const [sessionId, setSessionId] = useState(null);
   const messagesEndRef = useRef(null);
 
   const toggleChatbot = () => setIsOpen(!isOpen);
@@ -101,7 +101,7 @@ const Chatbot = () => {
       <header className="bg-gradient-to-r from-ivory-orange to-ivory-green text-white p-4 flex items-center justify-between">
           <div className="flex items-center">
             <Bot className="h-6 w-6 mr-2" />
-            <h3 className="font-semibold text-lg">Assistant JuriAccès</h3>
+            <h3 className="font-semibold text-lg">Miss Ella</h3>
           </div>
           <Button variant="ghost" size="icon" onClick={toggleChatbot} className="text-white hover:bg-white/20">
             <X className="h-5 w-5" />

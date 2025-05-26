@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -39,7 +38,7 @@ const Header = () => {
             <Link to="/" className="text-2xl font-bold gradient-text">JuriAccès</Link>
           </motion.div>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-100">
             <NavigationMenu>
               <NavigationMenuList>
 
@@ -48,19 +47,19 @@ const Header = () => {
                 </NavigationMenuLink>
 
                 <NavigationMenuLink asChild>
-                  <Link to="/glossaire" className={`${navLinkClasses} ml-6`}>Glossaire</Link>
+                  <Link to="/glossaire" className={navLinkClasses}>Glossaire</Link>
                 </NavigationMenuLink>
 
                 <NavigationMenuLink asChild>
-                  <Link to="/thematiques" className={`${navLinkClasses} ml-6`}>Thématiques</Link>
+                  <Link to="/thematiques" className={navLinkClasses}>Thématiques</Link>
                 </NavigationMenuLink>
 
                 <NavigationMenuLink asChild>
-                  <Link to="/ressources" className={`${navLinkClasses} ml-6`}>Ressources</Link>
+                  <Link to="/ressources" className={navLinkClasses}>Ressources</Link>
                 </NavigationMenuLink>
 
                 <NavigationMenuLink asChild>
-                  <Link to="/systeme-judiciaire" className={`${navLinkClasses} ml-6`}>Systeme Juridique</Link>
+                  <Link to="/systeme-judiciaire" className={navLinkClasses}>Systeme Juridique</Link>
                 </NavigationMenuLink>
 
               </NavigationMenuList>
