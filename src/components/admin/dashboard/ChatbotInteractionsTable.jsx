@@ -132,6 +132,11 @@ const ChatbotInteractionsTable = ({ toast }) => {
     toast({ title: "Exportation Excel", description: "Rapport Excel téléchargé." });
   };
 
+  const truncateText = (text, maxLength = 50) => {
+    if (!text) return 'N/A'; // Si le texte est vide ou null
+    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+  };
+
   if (loading) return <p>Chargement...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
@@ -180,8 +185,8 @@ const ChatbotInteractionsTable = ({ toast }) => {
                   {chatbotQuestions.map((log) => (
                     <TableRow key={log.session_id}>
                       <TableCell className="font-medium">{log.session_id}</TableCell>
-                      <TableCell>{log.messages[0]?.contenue || 'N/A'}</TableCell>
-                      <TableCell>{log.messages[1]?.contenue || 'N/A'}</TableCell>
+                      <TableCell title={log.messages[0]?.contenue}>{truncateText(log.messages[0]?.contenue, 50)}</TableCell>
+                      <TableCell title={log.messages[1]?.contenue}>{truncateText(log.messages[1]?.contenue, 50)}</TableCell>
                       <TableCell>{new Date(log.created_at).toLocaleString()}</TableCell>
                       <TableCell>Utilisateur inconnu</TableCell>
                     </TableRow>

@@ -9,6 +9,7 @@ import axios from 'axios'; // Importer Axios pour les appels API
 import { fetchJudicialSystemCount } from '@/api/structureJudicial';
 import { fetchCategoryCount } from '@/api/categorieDroit';
 import { fetchSubjectCount } from '@/api/sujetDroit';
+import { fetchGlossaryCount } from '@/api/glossary';
 
 import DashboardStats from '@/components/admin/dashboard/DashboardStats';
 import DailyVisitorsChart from '@/components/admin/dashboard/DailyVisitorsChart';
@@ -52,7 +53,7 @@ const AdminDashboardPage = () => {
         
 
         // Récupérer d'autres statistiques depuis localStorage
-        const glossaryCount = JSON.parse(localStorage.getItem('glossaryTerms') || '[]').length;
+        const glossaryCount = await fetchGlossaryCount();
         // const thematicsCount = JSON.parse(localStorage.getItem('thematicItems') || '[]').length;
         const resourcesCount = JSON.parse(localStorage.getItem('resourceItems') || '[]').length;
        

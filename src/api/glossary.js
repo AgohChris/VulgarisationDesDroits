@@ -59,3 +59,13 @@ const loadGlossaries = async () => {
     });
   }
 };
+
+export const fetchGlossaryCount = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/glossaire/count');
+    return response.data.total; // Retourne uniquement le nombre total
+  } catch (error) {
+    console.error("Erreur lors de la récupération du nombre de termes du glossaire :", error);
+    throw error;
+  }
+};
