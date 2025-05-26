@@ -90,3 +90,7 @@ Route::prefix('sujet-droit')->group(function () {
     Route::delete('/supprimer/{id}', [SujetDroitController::class, 'supprimer']);
     Route::get('/count', [SujetDroitController::class, 'count']);
 });
+
+
+//Compter glossaire
+Route::get('/glossaire/count', [GlossaireController::class, 'count_glossaire']);

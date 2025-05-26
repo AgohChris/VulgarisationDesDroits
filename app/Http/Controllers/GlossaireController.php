@@ -90,4 +90,12 @@ class GlossaireController extends Controller
             'data' => $glossaire
         ], 200);
     }
+    
+
+        public function count_glossaire(): JsonResponse
+    {
+        $total = Glossaire::count();
+
+        return response()->json(['total' => $total], 200);
+    }
 }
