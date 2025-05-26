@@ -66,7 +66,7 @@ nettoyer_json("ChatbotAi/juriste_data.json", "ChatbotAi/juriste_data_nettoyer.js
 
 # Pour trouver une similarité en cas de reformulation des questions posé par l'utilisateur avant de répondre.
 def recherche_reponse(message_utilisateur, donnees, seuil_similarite=80):
-  
+   
     meilleure_question = None
     meilleure_similarite = 0
     meilleure_reponse = None
@@ -83,17 +83,21 @@ def recherche_reponse(message_utilisateur, donnees, seuil_similarite=80):
                         meilleure_question = question["question"]
                         simple = question["simple"]
                         
-                        # Traiter les réponses structurées
+                        # Construire la réponse principale
                         if isinstance(simple, dict):
                             simple_reponse = simple.get("introduction", "")
                             for key, value in simple.items():
-                                if key.startswith("etape_") or key.startswith("exemple_"):
+                                if key.startswith("etape_") or key.startswith("cas_"):
                                     simple_reponse += f"\n- {value}"
                         else:
                             simple_reponse = simple
                         
+                        # Ajouter l'exemple s'il existe
                         exemple = question.get("exemple", "")
-                        meilleure_reponse = f"{simple_reponse}\n\nExemple : {exemple}"
+                        if exemple:
+                            meilleure_reponse = f"{simple_reponse}\n\nExemple : {exemple}"
+                        else:
+                            meilleure_reponse = simple_reponse
 
     if meilleure_reponse:
         print(f"Question similaire trouvée : {meilleure_question} (Similarité : {meilleure_similarite}%)")

@@ -3,18 +3,18 @@
     "licenciement": {
       "questions": [
         {
-          "question": "Quels sont les droits d’un salarié licencié ?",
-          "simple": {
-            "introduction": "Il existe 2 cas :",
-            "cas_1": "Le premier cas, c'est lorsque l'employé commet une faute : dans ce cas-là, il a droit à l'acquisition, la gratification, la prime de salaire, l'indemnité de licenciement, la prime de congé.",
-            "cas_2": "Le second cas, c'est lorsque l'employeur commet une faute : dans ce cas-là, il à le droit d'acquis "
-          },
-            "exemple": "Par exemple, un employé licencié sans préavis peut demander une indemnité compensatoire."
+           "question": "Quels sont les droits d’un salarié licencié ?",
+    "simple": {
+        "introduction": "Il existe 2 cas :<br>",
+        "cas_1": "Le premier cas, c'est lorsque l'employé commet une faute :<ul><li>Acquisition</li><li>Gratification</li><li>Prime de salaire</li><li>Indemnité de licenciement</li><li>Prime de congé</li></ul>",
+        "cas_2": "Le second cas, c'est lorsque l'employeur commet une faute :<ul><li>Droit d'acquis</li></ul>"
+    },
+    "exemple": "un employé licencié sans préavis peut demander une indemnité compensatoire."
         },
 
         {
           "question": "Quelles sont les conditions pour qu’un licenciement soit considéré comme abusif ?",
-          "simple": "Un licenciement es considéré comme abusif lorsque l'employeur ne justifie pas le licencement d'un motif légitime."
+          "simple": "Un licenciement est considéré comme abusif lorsque l'employeur ne justifie pas le licencement d'un motif légitime."
         },
         {
           "question": "Que peut faire un salarié en cas de licenciement abusif ?",
