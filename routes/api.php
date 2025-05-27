@@ -77,7 +77,7 @@ Route::prefix('categorie-droit')->group(function () {
     Route::put('/update/{id}', [CategorieDroitController::class, 'update']);
     Route::delete('/supprimer/{id}', [CategorieDroitController::class, 'supprimer']);
     Route::get('/count', [CategorieDroitController::class, 'count']);
-    Route::get('/avec-sujets', [CategorieDroitController::class, 'listeAvecSujets']);
+    Route::get('/avec-sujets', [CategorieDroitController::class, 'listeAvecSujets']);  //new
 });
 
 
