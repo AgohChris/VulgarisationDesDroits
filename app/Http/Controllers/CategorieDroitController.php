@@ -33,6 +33,16 @@ class CategorieDroitController extends Controller
         ], 200);
     }
 
+    public function listeAvecSujets(): JsonResponse
+    {
+        $categories = CategorieDroit::with('sujets')->get();
+
+        return response()->json([
+            'message' => 'Liste des catégories avec leurs sujets récupérée avec succès.',
+            'data' => $categories
+        ], 200);
+    }
+
     public function supprimer($id): JsonResponse
     {
         $categorie = CategorieDroit::find($id);
