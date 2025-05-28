@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -38,20 +37,138 @@ const AdminResourcesPage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
+  const [file, setFile] = useState(null); // For file uploads
   const [type, setType] = useState(resourceTypes[0].value);
   const [isExternal, setIsExternal] = useState(false);
   const { toast } = useToast();
 
-  const getResourceIcon = (resourceType) => {
-    const rt = resourceTypes.find(r => r.value === resourceType);
-    const IconComponent = rt ? rt.icon : FileText;
-    const colorClass = rt ? `text-${rt.color}-500` : 'text-gray-500';
-    return <IconComponent className={`h-5 w-5 mr-2 ${colorClass}`} />;
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    // Validate file type based on the selected resource type
+    const allowedTypes = {
+      guide: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-powerpoint', 'image/jpeg', 'image/png'],
+      fiche: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-powerpoint', 'image/jpeg', 'image/png'],
+      podcast: ['audio/mpeg', 'audio/wav', 'audio/ogg'],
+    };
+
+    if (!allowedTypes[type]?.includes(selectedFile.type)) {
+      toast({
+        title: "Type de fichier invalide",
+        description: `Le type de fichier sélectionné n'est pas autorisé pour ce type de ressource.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setFile(selectedFile);
   };
-  
-  const getResourceLabel = (resourceType) => {
-    const rt = resourceTypes.find(r => r.value === resourceType);
-    return rt ? rt.label : 'Type inconnu';
+
+  const renderUploadField = () => (
+    <div
+      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-purple-500 transition"
+      onClick={() => document.getElementById('fileUploadInput').click()}
+    >
+      <input
+        id="fileUploadInput"
+        type="file"
+        onChange={handleFileChange}
+        className="hidden"
+        accept={
+          type === 'guide' || type === 'fiche'
+            ? '.pdf,.docx,.pptx,.jpeg,.jpg,.png'
+            : type === 'podcast'
+            ? '.mp3,.wav,.ogg'
+            : ''
+        }
+      />
+      <div className="flex flex-col items-center">
+        {file ? (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-10 w-10 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <p className="text-gray-600 mt-2">{file.name}</p>
+          </>
+        ) : (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-10 w-10 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 15a4 4 0 004 4h10a4 4 0 004-4M7 10l5-5m0 0l5 5m-5-5v12"
+              />
+            </svg>
+            <p className="text-gray-600 mt-2">
+              Cliquez pour uploader ou glissez-déposez
+            </p>
+            <p className="text-xs text-gray-400">
+              {type === 'guide' || type === 'fiche'
+                ? 'PDF, DOCX, PPTX, JPEG, PNG (MAX. 10 Mo)'
+                : type === 'podcast'
+                ? 'MP3, WAV, OGG (MAX. 10 Mo)'
+                : ''}
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!title.trim() || !description.trim() || (!link.trim() && !file)) {
+      toast({
+        title: "Champs requis",
+        description: "Le titre, la description et le lien ou fichier de la ressource sont obligatoires.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newItem = {
+      id: Date.now(),
+      title,
+      description,
+      link: file ? URL.createObjectURL(file) : link, // Use file URL if uploaded
+      type,
+      isExternal,
+    };
+
+    if (currentItem) {
+      setResources(resources.map(r => r.id === currentItem.id ? newItem : r));
+      toast({ title: "Ressource modifiée", description: `La ressource "${title}" a été mise à jour.` });
+    } else {
+      setResources([...resources, newItem]);
+      toast({ title: "Ressource ajoutée", description: `La ressource "${title}" a été ajoutée.` });
+    }
+    closeModal();
+  };
+
+  const handleDelete = (id, resTitle) => {
+     if (window.confirm(`Êtes-vous sûr de vouloir supprimer la ressource "${resTitle}" ?`)) {
+      setResources(resources.filter(r => r.id !== id));
+      toast({ title: "Ressource supprimée", description: `La ressource "${resTitle}" a été supprimée.`, variant: "destructive" });
+    }
   };
 
   const openModal = (item = null) => {
@@ -74,32 +191,14 @@ const AdminResourcesPage = () => {
     setIsExternal(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!title.trim() || !description.trim() || !link.trim()) {
-        toast({
-            title: "Champs requis",
-            description: "Le titre, la description et le lien de la ressource sont obligatoires.",
-            variant: "destructive",
-        });
-        return;
-    }
-    if (currentItem) {
-      setResources(resources.map(r => r.id === currentItem.id ? { ...r, title, description, link, type, isExternal } : r));
-      toast({ title: "Ressource modifiée", description: `La ressource "${title}" a été mise à jour.` });
-    } else {
-      const newItem = { id: Date.now(), title, description, link, type, isExternal };
-      setResources([...resources, newItem]);
-      toast({ title: "Ressource ajoutée", description: `La ressource "${title}" a été ajoutée.` });
-    }
-    closeModal();
+  const getResourceIcon = (type) => {
+    const resource = resourceTypes.find((rt) => rt.value === type);
+    return resource ? React.createElement(resource.icon, { className: `h-5 w-5 text-${resource.color}-500 mr-2` }) : null;
   };
 
-  const handleDelete = (id, resTitle) => {
-     if (window.confirm(`Êtes-vous sûr de vouloir supprimer la ressource "${resTitle}" ?`)) {
-      setResources(resources.filter(r => r.id !== id));
-      toast({ title: "Ressource supprimée", description: `La ressource "${resTitle}" a été supprimée.`, variant: "destructive" });
-    }
+  const getResourceLabel = (type) => {
+    const resource = resourceTypes.find((rt) => rt.value === type);
+    return resource ? resource.label : 'Type inconnu';
   };
 
   return (
@@ -112,64 +211,86 @@ const AdminResourcesPage = () => {
       >
         <h1 className="text-3xl font-bold text-gray-800">Gestion des Ressources</h1>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-                <Button onClick={() => openModal()} className="bg-purple-600 hover:bg-purple-700 text-white">
-                    <PlusCircle className="mr-2 h-5 w-5" /> Ajouter une ressource
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">{currentItem ? 'Modifier' : 'Ajouter'} une ressource</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 py-4">
-                    <div>
-                        <Label htmlFor="resourceTitle" className="block text-sm font-medium text-gray-700 mb-1">Titre</Label>
-                        <Input id="resourceTitle" value={title} onChange={(e) => setTitle(e.target.value)} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="resourceDescription" className="block text-sm font-medium text-gray-700 mb-1">Description</Label>
-                        <Textarea id="resourceDescription" value={description} onChange={(e) => setDescription(e.target.value)} required rows="3" />
-                    </div>
-                    <div>
-                        <Label htmlFor="resourceType" className="block text-sm font-medium text-gray-700 mb-1">Type de ressource</Label>
-                        <Select value={type} onValueChange={setType}>
-                        <SelectTrigger className="w-full mt-1">
-                            <SelectValue placeholder="Sélectionnez un type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {resourceTypes.map(rt => (
-                            <SelectItem key={rt.value} value={rt.value}>
-                                <div className="flex items-center">
-                                {React.createElement(rt.icon, { className: `h-4 w-4 mr-2 text-${rt.color}-500`})}
-                                {rt.label}
-                                </div>
-                            </SelectItem>
-                            ))}
-                        </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label htmlFor="resourceLink" className="block text-sm font-medium text-gray-700 mb-1">Lien / Chemin du fichier</Label>
-                        <Input id="resourceLink" value={link} onChange={(e) => setLink(e.target.value)} required placeholder="ex: /guides/mon-guide.pdf ou https://example.com" />
-                    </div>
-                    <div className="flex items-center space-x-2 pt-2">
-                        <Checkbox
-                            id="isExternal"
-                            checked={isExternal}
-                            onCheckedChange={setIsExternal}
-                        />
-                        <Label htmlFor="isExternal" className="text-sm font-medium text-gray-700">
-                            C'est un lien externe (ouvre dans un nouvel onglet)
-                        </Label>
-                    </div>
-                    <DialogFooter className="pt-4">
-                        <DialogClose asChild>
-                            <Button type="button" variant="outline" onClick={closeModal}>Annuler</Button>
-                        </DialogClose>
-                        <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">{currentItem ? 'Sauvegarder' : 'Ajouter'}</Button>   
-                    </DialogFooter>
-                </form>
-            </DialogContent>
+          <DialogTrigger asChild>
+            <Button onClick={() => openModal()} className="bg-purple-600 hover:bg-purple-700 text-white">
+              <PlusCircle className="mr-2 h-5 w-5" /> Ajouter une ressource
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">{currentItem ? 'Modifier' : 'Ajouter'} une ressource</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="resourceTitle" className="block text-sm font-medium text-gray-700 mb-1">Titre</Label>
+                <Input id="resourceTitle" value={title} onChange={(e) => setTitle(e.target.value)} required />
+              </div>
+              <div>
+                <Label htmlFor="resourceDescription" className="block text-sm font-medium text-gray-700 mb-1">Description</Label>
+                <Textarea id="resourceDescription" value={description} onChange={(e) => setDescription(e.target.value)} required rows="3" />
+              </div>
+              <div>
+                <Label htmlFor="resourceType" className="block text-sm font-medium text-gray-700 mb-1">Type de ressource</Label>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="Sélectionnez un type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {resourceTypes.map(rt => (
+                      <SelectItem key={rt.value} value={rt.value}>
+                        <div className="flex items-center">
+                          {React.createElement(rt.icon, { className: `h-4 w-4 mr-2 text-${rt.color}-500` })}
+                          {rt.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="resourceLinkOrFile" className="block text-sm font-medium text-gray-700 mb-1">
+                  {type === 'guide' || type === 'fiche' ? 'Fichier à uploader' : type === 'video' ? 'Lien YouTube' : 'Lien ou fichier'}
+                </Label>
+                {type === 'guide' || type === 'fiche' ? (
+                  renderUploadField()
+                ) : type === 'podcast' ? (
+                  <>
+                    <Input
+                      id="resourceLink"
+                      value={link}
+                      onChange={(e) => setLink(e.target.value)}
+                      placeholder="Lien (optionnel)"
+                    />
+                    <div className="mt-2">{renderUploadField()}</div>
+                  </>
+                ) : (
+                  <Input
+                    id="resourceLinkOrFile"
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    required={!file}
+                    placeholder="ex: https://youtube.com/watch?v=examplevideo"
+                  />
+                )}
+              </div>
+              <div className="flex items-center space-x-2 pt-2">
+                <Checkbox
+                  id="isExternal"
+                  checked={isExternal}
+                  onCheckedChange={setIsExternal}
+                />
+                <Label htmlFor="isExternal" className="text-sm font-medium text-gray-700">
+                  C'est un lien externe (ouvre dans un nouvel onglet)
+                </Label>
+              </div>
+              <DialogFooter className="pt-4">
+                <DialogClose asChild>
+                  <Button type="button" variant="outline" onClick={closeModal}>Annuler</Button>
+                </DialogClose>
+                <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">{currentItem ? 'Sauvegarder' : 'Ajouter'}</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
         </Dialog>
       </motion.div>
 
