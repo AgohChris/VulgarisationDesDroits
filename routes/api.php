@@ -10,6 +10,9 @@ use App\Http\Controllers\StructureJudiciaireController;
 use App\Http\Controllers\CategorieDroitController;
 use App\Http\Controllers\SujetDroitController;
 
+use App\Http\Controllers\RessourceController;
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -95,3 +98,17 @@ Route::prefix('sujet-droit')->group(function () {
 
 //Compter glossaire
 Route::get('/glossaire/count', [GlossaireController::class, 'count_glossaire']);
+
+
+
+
+
+// Modia si  aujourd'hui tu pas mélanges mes routes , varan 1.0
+Route::prefix('ressources')->group(function () {
+    Route::post('/ajout', [RessourceController::class, 'ajout']);
+    Route::get('/liste', [RessourceController::class, 'liste']);
+    Route::get('/{id}', [RessourceController::class, 'afficher']);
+    Route::post('/modifier/{id}', [RessourceController::class, 'modifier']);
+    Route::delete('/supprimer/{id}', [RessourceController::class, 'supprimer']);
+    Route::get('/count', [RessourceController::class, 'count_ressources']);
+});
