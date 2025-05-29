@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .utils import get_ai_response
+from .utils import get_ai_response, envoyer_email
 import uuid
 from .models import *
 from .serializers import *
@@ -127,27 +127,54 @@ class NewsletterMessageListeView(APIView):
 
 # Api pour l'envoie des newsletters aux abonnées
 class SendNewsletterAPIView(APIView):
+
     def post(self, request, pk):
         try:
             message = NewsletterMessage.objects.get(pk=pk, statut='brouillon')
-            abonnés = NewsletterAbonnee.objects.filter(is_active=True)
+            abonnes = NewsletterAbonnee.objects.filter(is_active=True)
 
-            for abonné in abonnés:
-                send_mail(
-                    subject=message.objet,
-                    message=message.contenue,
-                    from_email='agohchris90@gmail.com',
-                    recipient_list=[abonné.email],
-                )
+            self.envoyer_newsletter(message, abonnes)
+
 
             message.statut = 'envoyé'
             message.date_envoie = now()
             message.save()
 
             return Response({"message": "Newsletter envoyée avec succès."}, status=status.HTTP_200_OK)
+            
         except NewsletterMessage.DoesNotExist:
             return Response({"error": "Message introuvable ou déjà envoyé."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(f"Erreur lors de l'envoi de la newsletter : {e}")
+            return Response({"error": "Erreur interne du serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+    def envoyer_newsletter(self, message, abonnes):
+            # on exécute l'envoi en bloucle pour envoyer la newsletter à tous les abonnés.
+            for abonne in abonnes:
+                try:
+                    self.envoyer_email_html(message, abonne.email)
+                except Exception as e:
+                    print(f"Erreur lors de l'envoi de l'email à {abonne.email} : {e}")
+                
+
+
+    def envoyer_email_html(self, message, email):
+        # Envoie du email en HTML.
+        context = {
+            "objet": message.objet,
+            "contenue": message.contenue,   
+        }
+        try:
+            envoyer_email(
+                subject=message.objet,
+                to_email=email,
+                template_name="emails/newsletter_campagne.html",  # Assurez-vous que ce fichier existe
+                context=context,
+            )
+        except Exception as e:
+            print(f"Erreur lors de l'envoi de l'email HTML à {email} : {e}")
+            raise
 
 # Api pour modifier les newsletter
 class NewsletterMessageUpdateView(APIView):

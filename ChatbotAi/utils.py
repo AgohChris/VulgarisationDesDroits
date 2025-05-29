@@ -5,6 +5,8 @@ import dotenv
 import os
 import json
 from rapidfuzz import fuzz, process
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
 
 
 dotenv.load_dotenv()
@@ -204,3 +206,16 @@ def ajouter_reponse(domaine, theme, question, simple, exemple, fichier="juriste_
     print(f"Question ajoutée sous le thème '{theme}' dans le domaine '{domaine}'.")
 
 
+
+
+
+def envoyer_email(subject, to_email, template_name, context):
+    html_content = render_to_string(template_name, context)
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body="",
+        from_email="agohchris90@gmail.com",
+        to=[to_email]
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()
