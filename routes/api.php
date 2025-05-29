@@ -103,12 +103,10 @@ Route::get('/glossaire/count', [GlossaireController::class, 'count_glossaire']);
 
 
 
-// Modia si  aujourd'hui tu pas mélanges mes routes , varan 1.0
-Route::prefix('ressources')->group(function () {
-    Route::post('/ajout', [RessourceController::class, 'ajout']);
-    Route::get('/liste', [RessourceController::class, 'liste']);
-    Route::get('/{id}', [RessourceController::class, 'afficher']);
-    Route::post('/modifier/{id}', [RessourceController::class, 'modifier']);
-    Route::delete('/supprimer/{id}', [RessourceController::class, 'supprimer']);
-    Route::get('/count', [RessourceController::class, 'count_ressources']);
-});
+
+// VARAN 1.0
+Route::post('/ressources', [RessourceController::class, 'store']); // Ajout d'une ressource
+Route::get('/ressources', [RessourceController::class, 'index']); // Affiche toutes les ressources
+Route::get('/ressources/guides-pratiques', [RessourceController::class, 'guidesPratiques']); // Affiche uniquement les guides pratiques
+Route::get('/ressources/podcasts', [RessourceController::class, 'podcasts']); // Affiche uniquement les podcasts
+Route::get('/ressources/videos', [RessourceController::class, 'videos']); // Affiche uniquement les vidéos
