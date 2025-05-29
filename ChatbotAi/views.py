@@ -6,7 +6,6 @@ import uuid
 from .models import *
 from .serializers import *
 from rest_framework.generics import ListAPIView
-from django.core.mail import send_mail
 from django.utils.timezone import now
 
 
