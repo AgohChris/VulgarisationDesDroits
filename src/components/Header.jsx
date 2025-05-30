@@ -59,7 +59,7 @@ const Header = () => {
                 </NavigationMenuLink>
 
                 <NavigationMenuLink asChild>
-                  <Link to="/systeme-judiciaire" className={navLinkClasses}>Systeme Juridique</Link>
+                  <Link to="/systeme-judiciaire" className={navLinkClasses}>Structure Judiciaire</Link>
                 </NavigationMenuLink>
 
               </NavigationMenuList>
@@ -104,6 +104,7 @@ const Header = () => {
               <Link to="/glossaire" className={mobileNavLinkClasses} onClick={toggleMenu}>Glossaire</Link>
               <Link to="/thematiques" className={mobileNavLinkClasses} onClick={toggleMenu}>Thématiques</Link>
               <Link to="/ressources" className={mobileNavLinkClasses} onClick={toggleMenu}>Ressources</Link>
+              <Link to="/systeme-judiciaire" className={mobileNavLinkClasses} onClick={toggleMenu}>Structure Judiciaire</Link>
             </nav>
             <form onSubmit={handleSearch} className="mt-4 relative">
               <Input

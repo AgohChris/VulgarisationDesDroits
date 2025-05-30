@@ -31,7 +31,8 @@ const resourcesData = [
       { title: "Vos droits face à la police", type: "Vidéo" }
     ],
     delay: 0.2,
-    externalUrl: "https://www.youtube.com/channel/VOTRE_CHAINE" 
+    // externalUrl: "https://www.youtube.com/channel/VOTRE_CHAINE"
+    internalPath: "/ressources/videos"
   },
   {
     id: "podcasts",
