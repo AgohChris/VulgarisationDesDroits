@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ValidationError
 from .models import *
 
 
@@ -31,9 +31,22 @@ class NewsletterMessageSerializer(ModelSerializer):
             'contenue': {'required': True},
         }
 
+
 class RessourceSerializer(ModelSerializer):
     class Meta:
         model = Ressource
-        fields = ['id', 'intitule', 'description', 'upload', 'type', 'date_ajout']
+        fields = ['id', 'intitule', 'description', 'upload', 'type', 'date_ajout', 'lien']
 
     
+    def validate(self, data):
+        type_ressource = data.get('type')
+
+        if type_ressource in ['guide', 'fiche'] and not data.get('upload'):
+            raise ValidationError(f"Un fichier est requis pour le type '{type_ressource}'.")
+        if type_ressource == 'video' and not data.get('lien'):
+            raise ValidationError("un lien est requis pour le type 'video'.")
+        if type_ressource == 'podcast' and not (data.get('upload') or data.get('lien')):
+            raise ValidationError("Un fichier ou un lien est requis pour le type 'podcast'.")
+       
+        return data
+

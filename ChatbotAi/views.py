@@ -220,7 +220,9 @@ class RessourceListAPIView(ListAPIView):
 # APi pour Ajouter une ressource 
 class RessourceCreateAPIView(APIView):
     def post(self, request):
-        serializer = RessourceSerializer(data=request.data)
+        data = request.data
+
+        serializer = RessourceSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

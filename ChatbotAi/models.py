@@ -55,7 +55,9 @@ class Ressource(models.Model):
     intitule = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     upload = models.FileField(upload_to='ressources/', null=True, blank=True)
+    lien = models.URLField(max_length=200, blank=True, null=True) 
     type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='guide')
+
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -68,13 +70,7 @@ class Fiche(Ressource):
     pass
 
 class Podcast(Ressource):
-    lien = models.URLField(max_length=200, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.intitule} - {self.lien}"
+    pass
 
 class Video(Ressource):
-    lien = models.URLField(max_length=200, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.intitule} - {self.lien}"
+    pass

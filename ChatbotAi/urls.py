@@ -1,5 +1,7 @@
 from django.urls import path
 from .views import *
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('chatbot/', ChatBotAPIVIEW.as_view(), name='chatbot_api'),
@@ -35,9 +37,9 @@ urlpatterns = [
     # ajout des ressource 
     path('ressources/ajouts', RessourceCreateAPIView.as_view(), name="ressource_ajout"),
     # Modification des ressources
-    path('ressources/update/<int:pk>', RessourceUpdateAPIView.as_view(), name="ressource_update"),
+    path('ressources/<int:pk>/update', RessourceUpdateAPIView.as_view(), name="ressource_update"),
     # Suppression des ressources
-    path('ressources/update/<int:pk>', RessourceSuppressionApiView.as_view(), name="ressource_update"),
+    path('ressources/<int:pk>/delete', RessourceSuppressionApiView.as_view(), name="ressource_delete"),
     # Comptage des ressources
     path('ressources/count', ComptageRessourceAPiIView.as_view(), name="ressource_count"),
     
@@ -50,4 +52,4 @@ urlpatterns = [
 
 
 
-]
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
