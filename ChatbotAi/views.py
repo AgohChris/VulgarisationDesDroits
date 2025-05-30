@@ -288,7 +288,7 @@ class ComptageRessourceAPiIView(APIView):
     def get(self, request):
         try:
             count_ressources = Ressource.objects.count()
-            return Response({"sount_ressource": count_ressources}, status=status.HTTP_200_OK)
+            return Response({"count_ressource": count_ressources}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Erreur dans la view ComptageRessource... : {e}")
             return Response({"error": "Erreur interne sur le serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
