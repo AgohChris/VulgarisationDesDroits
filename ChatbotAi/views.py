@@ -88,7 +88,6 @@ class NewsletterListeAbonmeeView(APIView):
 
 
 
-
 # Api pour le désabonnement des utilisateurs 
 class NewsletterDesabonnementView(APIView):
     def delete(self, request):
@@ -210,3 +209,86 @@ class NewsletterMessageDeleteView(APIView):
             return Response({"error": "Message introuvable"}, status=status.HTTP_404_NOT_FOUND)
         message.delete()
         return Response({"message": "Message supprimé avec succès"}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Api pour lister toute les ressources
+class RessourceListAPIView(ListAPIView):
+    queryset = Ressource.objects.all()
+    serializer_class = RessourceSerializer
+
+
+# APi pour Ajouter une ressource 
+class RessourceCreateAPIView(APIView):
+    def post(self, request):
+        serializer = RessourceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+#  Api pour modifier une ressource
+class RessourceUpdateAPIView(APIView):
+    def put(self, request, pk):
+        try:
+            ressource = Ressource.objects.get(pk=pk)
+        except Ressource.DoesNotExist:
+            return Response({"error": "Ressource introuvable"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = RessourceSerializer(ressource, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+    
+
+# Api pour Supprimer une ressource
+class RessourceSuppressionApiView(APIView):
+    def delete(self, request, pk):
+        try:
+            ressource = Ressource.objects.get(pk=pk)
+        except Ressource.DoesNotExist:
+            return Response({"error": "Ressource introuvable"}, status=status.HTTP_404_NOT_FOUND)
+        ressource.delete()
+        return Response({"error": "Ressource introuvable"}, status=status.HTTP_404_NOT_FOUND)
+
+
+# Api pour lister les Guides
+class RessourceListeTypeGuide(APIView):
+    def get(self, request, type):
+        ressources = Ressource.objects.filter(type="guide")
+        serializer = RessourceSerializer(ressources, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Api pour lister les Fiches
+class RessourceListeTypeFiche(APIView):
+    def get(self, request, type):
+        ressources = Ressource.objects.filter(type="fiche")
+        serializer = RessourceSerializer(ressources, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Api pour lister les Podcasts
+class RessourceListeTypePodcast(APIView):
+    def get(self, request, type):
+        ressources = Ressource.objects.filter(type="podcast")
+        serializer = RessourceSerializer(ressources, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Api pour lister les Videos
+class RessourceListeTypeVideo(APIView):
+    def get(self, request, type):
+        ressources = Ressource.objects.filter(type="video")
+        serializer = RessourceSerializer(ressources, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class ComptageRessourceAPiIView(APIView):
+    def get(self, request):
+        try:
+            count_ressources = Ressource.objects.count()
+            return Response({"sount_ressource": count_ressources}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Erreur dans la view ComptageRessource... : {e}")
+            return Response({"error": "Erreur interne sur le serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+

@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import ChatSession, MessageChat, NewsletterAbonnee, NewsletterMessage
+from .models import *
 
 
 class MessageChatSerializer(ModelSerializer):
@@ -30,3 +30,10 @@ class NewsletterMessageSerializer(ModelSerializer):
             'objet': {'required': True},
             'contenue': {'required': True},
         }
+
+class RessourceSerializer(ModelSerializer):
+    class Meta:
+        model = Ressource
+        fields = ['id', 'intitule', 'description', 'upload', 'type', 'date_ajout']
+
+    
