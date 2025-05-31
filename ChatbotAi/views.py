@@ -283,7 +283,7 @@ class RessourceListeTypeVideo(APIView):
         serializer = RessourceSerializer(ressources, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-
+# Api pour compter les nombre ressources disponible 
 class ComptageRessourceAPiIView(APIView):
     def get(self, request):
         try:
