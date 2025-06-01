@@ -45,10 +45,10 @@ urlpatterns = [
     
 
     # Lister les differents types
-    path('ressources/liste/type/guide', RessourceListeTypeGuide.as_view(), name="ressource_liste_type_guide"),
-    path('ressources/liste/type/fiche', RessourceListeTypeFiche.as_view(), name="ressource_liste_type_fiche"),
-    path('ressources/liste/type/podcast', RessourceListeTypePodcast.as_view(), name="ressource_liste_type_podcast"),
-    path('ressources/liste/type/video', RessourceListeTypeVideo.as_view(), name="ressource_liste_type_video"),
+    path('ressources/liste/type/<str:type>', RessourceListeTypeAPIView.as_view(), name="ressource_liste_type"),
+    # path('ressources/liste/type/fiche', RessourceListeTypeFiche.as_view(), name="ressource_liste_type_fiche"),
+    # path('ressources/liste/type/podcast', RessourceListeTypePodcast.as_view(), name="ressource_liste_type_podcast"),
+    # path('ressources/liste/type/video', RessourceListeTypeVideo.as_view(), name="ressource_liste_type_video"),
 
 
 

@@ -46,9 +46,9 @@ class NewsletterMessage(models.Model):
 
 TYPE_CHOICES = [
         ('guide', 'Guide Pratique'),
-        ('fiche', 'Fiche'),
-        ('podcast', 'Podcast'),
-        ('video', 'Vidéo'),
+        ('fiche', 'Vidéo Explicative'),
+        ('podcast', 'Podcast Juridique'),
+        ('video', 'Fiche Thématique'),
     ]
 
 class Ressource(models.Model):
@@ -57,8 +57,57 @@ class Ressource(models.Model):
     upload = models.FileField(upload_to='ressources/', null=True, blank=True)
     lien = models.URLField(max_length=200, blank=True, null=True) 
     type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='guide')
-
     date_ajout = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        # Sauvegarder l'objet Ressource
+        super().save(*args, **kwargs)
+
+        # Enregistrer dans la sous-classe correspondante
+        if self.type == 'guide':
+            GuidePratique.objects.get_or_create(
+                ressource_ptr=self,
+                defaults={
+                    'intitule': self.intitule,
+                    'description': self.description,
+                    'upload': self.upload,
+                    'lien': self.lien,
+                    'date_ajout': self.date_ajout
+                }
+            )
+        elif self.type == 'fiche':
+            Fiche.objects.get_or_create(
+                ressource_ptr=self,
+                defaults={
+                    'intitule': self.intitule,
+                    'description': self.description,
+                    'upload': self.upload,
+                    'lien': self.lien,
+                    'date_ajout': self.date_ajout
+                }
+            )
+        elif self.type == 'podcast':
+            Podcast.objects.get_or_create(
+                ressource_ptr=self,
+                defaults={
+                    'intitule': self.intitule,
+                    'description': self.description,
+                    'upload': self.upload,
+                    'lien': self.lien,
+                    'date_ajout': self.date_ajout
+                }
+            )
+        elif self.type == 'video':
+            Video.objects.get_or_create(
+                ressource_ptr=self,
+                defaults={
+                    'intitule': self.intitule,
+                    'description': self.description,
+                    'upload': self.upload,
+                    'lien': self.lien,
+                    'date_ajout': self.date_ajout
+                }
+            )
 
     def __str__(self):
         return f"{self.intitule} - {self.date_ajout.strftime('%Y-%m-%d')} ({self.get_type_display()})"

@@ -252,43 +252,31 @@ class RessourceSuppressionApiView(APIView):
         except Ressource.DoesNotExist:
             return Response({"error": "Ressource introuvable"}, status=status.HTTP_404_NOT_FOUND)
         ressource.delete()
-        return Response({"error": "Ressource introuvable"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "Ressource supprimée avec succès"}, status=status.HTTP_200_OK)
 
 
 # Api pour lister les Guides
-class RessourceListeTypeGuide(APIView):
+# class RessourceListeTypeGuide(APIView):
+#     def get(self, request):
+#         ressources = Ressource.objects.filter(type="guide")
+#         serializer = RessourceSerializer(ressources, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# API pour lister les ressources par type
+class RessourceListeTypeAPIView(APIView):
     def get(self, request, type):
-        ressources = Ressource.objects.filter(type="guide")
+        ressources = Ressource.objects.filter(type=type)
         serializer = RessourceSerializer(ressources, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# Api pour lister les Fiches
-class RessourceListeTypeFiche(APIView):
-    def get(self, request, type):
-        ressources = Ressource.objects.filter(type="fiche")
-        serializer = RessourceSerializer(ressources, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
-# Api pour lister les Podcasts
-class RessourceListeTypePodcast(APIView):
-    def get(self, request, type):
-        ressources = Ressource.objects.filter(type="podcast")
-        serializer = RessourceSerializer(ressources, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-# Api pour lister les Videos
-class RessourceListeTypeVideo(APIView):
-    def get(self, request, type):
-        ressources = Ressource.objects.filter(type="video")
-        serializer = RessourceSerializer(ressources, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
 # Api pour compter les nombre ressources disponible 
 class ComptageRessourceAPiIView(APIView):
     def get(self, request):
         try:
-            count_ressources = Ressource.objects.count()
-            return Response({"count_ressource": count_ressources}, status=status.HTTP_200_OK)
+            count_ressource = Ressource.objects.count()
+            return Response({"count_ressource": count_ressource}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Erreur dans la view ComptageRessource... : {e}")
             return Response({"error": "Erreur interne sur le serveur"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
