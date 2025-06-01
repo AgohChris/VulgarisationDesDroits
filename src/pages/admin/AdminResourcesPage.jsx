@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from '@/components/ui/label';
 import { Checkbox } from "@/components/ui/checkbox";
-import { PlusCircle, Edit, Trash2, FileText, Video, Headphones, BookOpen, ExternalLink } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, FileText, Video, Headphones, BookOpen, ExternalLink, Search } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
@@ -25,9 +25,10 @@ const resourceTypes = [
   { value: 'fiche', label: 'Fiche Thématique', icon: BookOpen, color: 'green' },
 ];
 
-
 const AdminResourcesPage = () => {
   const [resources, setResources] = useState([]);
+  const [filteredResources, setFilteredResources] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const [title, setTitle] = useState('');
@@ -43,9 +44,8 @@ const AdminResourcesPage = () => {
       try {
         const response = await getAllRessources();
         setResources(response);
+        setFilteredResources(response); // Initialisation des ressources filtrées
       } catch (error) {
-
-      
         console.error('Erreur lors de la récupération des ressources :', error);
         toast({
           title: "Erreur",
@@ -57,6 +57,18 @@ const AdminResourcesPage = () => {
 
     fetchResources();
   }, []);
+
+  useEffect(() => {
+    const filtered = resources.filter((resource) =>
+      resource.intitule.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      resource.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredResources(filtered);
+  }, [searchTerm, resources]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -102,8 +114,6 @@ const AdminResourcesPage = () => {
     if (link) {
       formData.append('lien', link);
     }
-
-    console.log('Données envoyées :', formData);
 
     try {
       const newResource = await createRessource(formData);
@@ -360,8 +370,19 @@ const AdminResourcesPage = () => {
         </Dialog>
       </motion.div>
 
+      <div className="mb-6">
+        <Input
+          type="text"
+          placeholder="Rechercher une ressource..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="w-full"
+          icon={<Search />}
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {resources.map((resource, index) => (
+        {filteredResources.map((resource, index) => (
           <motion.div
             key={resource.id}
             initial={{ opacity: 0, y: 20 }}
@@ -372,14 +393,12 @@ const AdminResourcesPage = () => {
               <CardHeader>
                 <div className="flex items-center mb-1">
                   {getResourceIcon(resource.type)}
-                  <CardTitle className="text-lg leading-tight">{resource.title}</CardTitle>
+                  <CardTitle className="text-lg leading-tight">{resource.intitule}</CardTitle>
                 </div>
                 <CardDescription className="text-xs text-gray-500">{getResourceLabel(resource.type)}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
-                {resource.intitule && <p className="text-sm font-bold text-gray-800">{resource.intitule}</p>}
                 <p className="text-sm text-gray-600 mb-2 h-16 overflow-hidden text-ellipsis">{resource.description}</p>
-                {resource.type && <p className="text-xs text-gray-500">Type : {resource.type}</p>}
                 {resource.upload && (
                   <a href={resource.upload} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-600 hover:text-purple-800">
                     Télécharger le fichier
@@ -395,7 +414,7 @@ const AdminResourcesPage = () => {
                  <Button variant="outline" size="sm" onClick={() => openModal(resource)}>
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleDelete(resource.id, resource.title)}>
+                <Button variant="destructive" size="sm" onClick={() => handleDelete(resource.id, resource.intitule)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </CardFooter>
@@ -403,7 +422,7 @@ const AdminResourcesPage = () => {
           </motion.div>
         ))}
       </div>
-      {resources.length === 0 && <p className="text-center text-gray-500 mt-8">Aucune ressource trouvée.</p>}
+      {filteredResources.length === 0 && <p className="text-center text-gray-500 mt-8">Aucune ressource trouvée.</p>}
     </div>
   );
 };
