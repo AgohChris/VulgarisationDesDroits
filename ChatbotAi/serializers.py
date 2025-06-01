@@ -37,7 +37,14 @@ class RessourceSerializer(ModelSerializer):
         model = Ressource
         fields = ['id', 'intitule', 'description', 'upload', 'type', 'date_ajout', 'lien']
 
+
     def validate_type(self, value):
+        TYPE_CHOICES = [
+                ('guide', 'Guide Pratique'),
+                ('fiche', 'Vidéo Explicative'),
+                ('podcast', 'Podcast Juridique'),
+                ('video', 'Fiche Thématique'),
+            ]
         """Validation spécifique pour le type"""
         if not value:
             raise ValidationError("Le type de ressource est obligatoire.")

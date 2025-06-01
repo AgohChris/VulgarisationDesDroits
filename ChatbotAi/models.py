@@ -44,14 +44,14 @@ class NewsletterMessage(models.Model):
         return f"{self.objet} - {self.statut}"
 
 
-TYPE_CHOICES = [
-        ('guide', 'Guide Pratique'),
-        ('fiche', 'Vidéo Explicative'),
-        ('podcast', 'Podcast Juridique'),
-        ('video', 'Fiche Thématique'),
-    ]
 
 class Ressource(models.Model):
+    TYPE_CHOICES = [
+            ('guide', 'Guide Pratique'),
+            ('fiche', 'Vidéo Explicative'),
+            ('podcast', 'Podcast Juridique'),
+            ('video', 'Fiche Thématique'),
+        ]
     intitule = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     upload = models.FileField(upload_to='ressources/', null=True, blank=True)
