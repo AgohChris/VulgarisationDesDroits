@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from '@/components/ui/label';
 import { Checkbox } from "@/components/ui/checkbox";
-import { PlusCircle, Edit, Trash2, FileText, Video, Headphones, BookOpen, ExternalLink } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, FileText, Video, Headphones, BookOpen, ExternalLink, Search, Filter, X } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
@@ -25,7 +25,6 @@ const resourceTypes = [
   { value: 'fiche', label: 'Fiche Thématique', icon: BookOpen, color: 'green' },
 ];
 
-
 const AdminResourcesPage = () => {
   const [resources, setResources] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,6 +35,12 @@ const AdminResourcesPage = () => {
   const [file, setFile] = useState(null);
   const [type, setType] = useState(resourceTypes[0].value);
   const [isExternal, setIsExternal] = useState(false);
+  
+  // États pour la recherche et les filtres
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
+  
   const { toast } = useToast();
 
   useEffect(() => {
@@ -44,8 +49,6 @@ const AdminResourcesPage = () => {
         const response = await getAllRessources();
         setResources(response);
       } catch (error) {
-
-      
         console.error('Erreur lors de la récupération des ressources :', error);
         toast({
           title: "Erreur",
@@ -57,6 +60,30 @@ const AdminResourcesPage = () => {
 
     fetchResources();
   }, []);
+
+  // Filtrage et recherche des ressources
+  const filteredResources = useMemo(() => {
+    return resources.filter(resource => {
+      const matchesSearch = searchQuery === '' || 
+        resource.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.intitule?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesType = selectedTypeFilter === 'all' || resource.type === selectedTypeFilter;
+      
+      return matchesSearch && matchesType;
+    });
+  }, [resources, searchQuery, selectedTypeFilter]);
+
+  // Statistiques pour affichage
+  const resourceStats = useMemo(() => {
+    const stats = resourceTypes.reduce((acc, type) => {
+      acc[type.value] = resources.filter(r => r.type === type.value).length;
+      return acc;
+    }, {});
+    stats.total = resources.length;
+    return stats;
+  }, [resources]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -106,14 +133,45 @@ const AdminResourcesPage = () => {
     console.log('Données envoyées :', formData);
 
     try {
-      const newResource = await createRessource(formData);
-      setResources((prevResources) => [...prevResources, newResource]);
-      toast({ title: 'Ressource ajoutée', description: `La ressource "${title}" a été ajoutée.` });
+      if (currentItem) {
+        // Mode modification
+        const updatedResource = await updateRessource(currentItem.id, {
+          title,
+          description,
+          type,
+          upload: file,
+          link
+        });
+        
+        setResources((prevResources) => 
+          prevResources.map(resource => 
+            resource.id === currentItem.id ? { ...resource, ...updatedResource } : resource
+          )
+        );
+        
+        toast({ 
+          title: 'Ressource modifiée', 
+          description: `La ressource "${title}" a été modifiée.` 
+        });
+      } else {
+        // Mode création
+        const newResource = await createRessource(formData);
+        setResources((prevResources) => [...prevResources, newResource]);
+        toast({ 
+          title: 'Ressource ajoutée', 
+          description: `La ressource "${title}" a été ajoutée.` 
+        });
+      }
+      
       closeModal();
     } catch (error) {
       const serverMessage = error.response?.data?.message || 'Erreur inconnue';
-      console.error('Erreur lors de l\'ajout de la ressource :', serverMessage);
-      toast({ title: 'Erreur', description: serverMessage, variant: 'destructive' });
+      console.error('Erreur lors de l\'opération :', serverMessage);
+      toast({ 
+        title: 'Erreur', 
+        description: serverMessage, 
+        variant: 'destructive' 
+      });
     }
   };
 
@@ -132,11 +190,14 @@ const AdminResourcesPage = () => {
 
   const openModal = (item = null) => {
     setCurrentItem(item);
-    setTitle(item ? item.title : '');
+    // Correction: utiliser intitule au lieu de title pour le champ titre
+    setTitle(item ? (item.intitule || item.title || '') : '');
     setDescription(item ? item.description : '');
-    setLink(item ? item.link : '');
+    setLink(item ? (item.lien || item.link || '') : '');
     setType(item ? item.type : resourceTypes[0].value);
     setIsExternal(item ? item.isExternal : false);
+    // Réinitialiser le file à null pour éviter la persistance
+    setFile(null);
     setIsModalOpen(true);
   };
 
@@ -148,6 +209,14 @@ const AdminResourcesPage = () => {
     setLink('');
     setType(resourceTypes[0].value);
     setIsExternal(false);
+    // Important: réinitialiser le fichier
+    setFile(null);
+    
+    // Réinitialiser également l'input file dans le DOM
+    const fileInput = document.getElementById('fileUploadInput');
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const getResourceIcon = (type) => {
@@ -160,6 +229,11 @@ const AdminResourcesPage = () => {
     return resource ? resource.label : 'Type inconnu';
   };
 
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedTypeFilter('all');
+  };
+
   return (
     <div className="container mx-auto py-8">
       <motion.div 
@@ -168,7 +242,13 @@ const AdminResourcesPage = () => {
         transition={{ duration: 0.5 }}
         className="flex justify-between items-center mb-8"
       >
-        <h1 className="text-3xl font-bold text-gray-800">Gestion des Ressources</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Gestion des Ressources</h1>
+          <p className="text-gray-600 mt-1">
+            {filteredResources.length} ressource{filteredResources.length > 1 ? 's' : ''} 
+            {filteredResources.length !== resources.length && ` sur ${resources.length}`} affichée{filteredResources.length > 1 ? 's' : ''}
+          </p>
+        </div>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => openModal()} className="bg-purple-600 hover:bg-purple-700 text-white">
@@ -179,7 +259,7 @@ const AdminResourcesPage = () => {
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">{currentItem ? 'Modifier' : 'Ajouter'} une ressource</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-4 py-4">
               <div>
                 <Label htmlFor="resourceTitle" className="block text-sm font-medium text-gray-700 mb-1">Titre</Label>
                 <Input id="resourceTitle" value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -353,15 +433,130 @@ const AdminResourcesPage = () => {
                 <DialogClose asChild>
                   <Button type="button" variant="outline" onClick={closeModal}>Annuler</Button>
                 </DialogClose>
-                <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">{currentItem ? 'Sauvegarder' : 'Ajouter'}</Button>
+                <Button type="button" onClick={handleSubmit} className="bg-purple-600 hover:bg-purple-700 text-white">{currentItem ? 'Sauvegarder' : 'Ajouter'}</Button>
               </DialogFooter>
-            </form>
+            </div>
           </DialogContent>
         </Dialog>
       </motion.div>
 
+      {/* Barre de recherche et filtres */}
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="mb-6 space-y-4"
+      >
+        {/* Barre de recherche */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Rechercher par titre, intitulé ou description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 pr-4"
+          />
+        </div>
+
+        {/* Filtres */}
+        <div className="flex flex-wrap items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            Filtres
+            {(searchQuery || selectedTypeFilter !== 'all') && (
+              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full ml-1">
+                {(searchQuery ? 1 : 0) + (selectedTypeFilter !== 'all' ? 1 : 0)}
+              </span>
+            )}
+          </Button>
+
+          {showFilters && (
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex flex-wrap items-center gap-3"
+            >
+              <Select value={selectedTypeFilter} onValueChange={setSelectedTypeFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filtrer par type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    <div className="flex items-center">
+                      <span className="mr-2">Tous les types</span>
+                      <span className="text-xs text-gray-500">({resourceStats.total})</span>
+                    </div>
+                  </SelectItem>
+                  {resourceTypes.map(rt => (
+                    <SelectItem key={rt.value} value={rt.value}>
+                      <div className="flex items-center">
+                        {React.createElement(rt.icon, { className: `h-4 w-4 mr-2 text-${rt.color}-500` })}
+                        {rt.label}
+                        <span className="text-xs text-gray-500 ml-2">({resourceStats[rt.value] || 0})</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {(searchQuery || selectedTypeFilter !== 'all') && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Effacer
+                </Button>
+              )}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Filtres actifs */}
+        {(searchQuery || selectedTypeFilter !== 'all') && (
+          <motion.div 
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-wrap gap-2"
+          >
+            {searchQuery && (
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                <Search className="h-3 w-3" />
+                Recherche : "{searchQuery}"
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="hover:bg-blue-200 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+            {selectedTypeFilter !== 'all' && (
+              <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                {getResourceIcon(selectedTypeFilter)}
+                Type : {getResourceLabel(selectedTypeFilter)}
+                <button 
+                  onClick={() => setSelectedTypeFilter('all')}
+                  className="hover:bg-purple-200 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </motion.div>
+
+      {/* Grille des ressources */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {resources.map((resource, index) => (
+        {filteredResources.map((resource, index) => (
           <motion.div
             key={resource.id}
             initial={{ opacity: 0, y: 20 }}
@@ -372,14 +567,13 @@ const AdminResourcesPage = () => {
               <CardHeader>
                 <div className="flex items-center mb-1">
                   {getResourceIcon(resource.type)}
-                  <CardTitle className="text-lg leading-tight">{resource.title}</CardTitle>
+                  <CardTitle className="text-lg leading-tight">{resource.intitule || resource.title}</CardTitle>
                 </div>
                 <CardDescription className="text-xs text-gray-500">{getResourceLabel(resource.type)}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
-                {resource.intitule && <p className="text-sm font-bold text-gray-800">{resource.intitule}</p>}
                 <p className="text-sm text-gray-600 mb-2 h-16 overflow-hidden text-ellipsis">{resource.description}</p>
-                {resource.type && <p className="text-xs text-gray-500">Type : {resource.type}</p>}
+                <p className="text-xs text-gray-500">Type : {resource.type}</p>
                 {resource.upload && (
                   <a href={resource.upload} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-600 hover:text-purple-800">
                     Télécharger le fichier
@@ -395,7 +589,7 @@ const AdminResourcesPage = () => {
                  <Button variant="outline" size="sm" onClick={() => openModal(resource)}>
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleDelete(resource.id, resource.title)}>
+                <Button variant="destructive" size="sm" onClick={() => handleDelete(resource.id, resource.intitule || resource.title)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </CardFooter>
@@ -403,7 +597,38 @@ const AdminResourcesPage = () => {
           </motion.div>
         ))}
       </div>
-      {resources.length === 0 && <p className="text-center text-gray-500 mt-8">Aucune ressource trouvée.</p>}
+
+      {/* Message si aucune ressource */}
+      {filteredResources.length === 0 && resources.length > 0 && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center text-gray-500 mt-8 py-12"
+        >
+          <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-lg font-medium">Aucune ressource trouvée</p>
+          <p className="text-sm">Essayez de modifier vos critères de recherche ou de filtrage</p>
+          <Button 
+            variant="outline" 
+            onClick={clearFilters}
+            className="mt-4"
+          >
+            Effacer tous les filtres
+          </Button>
+        </motion.div>
+      )}
+
+      {resources.length === 0 && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center text-gray-500 mt-8 py-12"
+        >
+          <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-lg font-medium">Aucune ressource disponible</p>
+          <p className="text-sm">Commencez par ajouter votre première ressource</p>
+        </motion.div>
+      )}
     </div>
   );
 };
