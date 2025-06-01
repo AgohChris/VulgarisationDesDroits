@@ -7,8 +7,10 @@ from .models import *
 from .serializers import *
 from rest_framework.generics import ListAPIView
 from django.utils.timezone import now
+import logging
 
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -220,14 +222,35 @@ class RessourceListAPIView(ListAPIView):
 # APi pour Ajouter une ressource 
 class RessourceCreateAPIView(APIView):
     def post(self, request):
-        data = request.data
-
+        data = request.data.copy()  # Copier les données pour éviter les modifications
+        
+        # Debug: afficher les données reçues
+        logger.info(f"Données reçues: {data}")
+        
+        # S'assurer que le type est présent
+        if 'type' not in data or not data.get('type'):
+            return Response(
+                {'error': 'Le type de ressource est obligatoire'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         serializer = RessourceSerializer(data=data)
+        
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+            try:
+                ressource = serializer.save()
+                logger.info(f"Ressource créée avec le type: {ressource.type}")
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                logger.error(f"Erreur lors de la création: {str(e)}")
+                return Response(
+                    {'error': f'Erreur lors de la création: {str(e)}'}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        else:
+            logger.error(f"Erreurs de validation: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 #  Api pour modifier une ressource
 class RessourceUpdateAPIView(APIView):
@@ -241,7 +264,7 @@ class RessourceUpdateAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 # Api pour Supprimer une ressource

@@ -37,16 +37,40 @@ class RessourceSerializer(ModelSerializer):
         model = Ressource
         fields = ['id', 'intitule', 'description', 'upload', 'type', 'date_ajout', 'lien']
 
-    
+    def validate_type(self, value):
+        """Validation spécifique pour le type"""
+        if not value:
+            raise ValidationError("Le type de ressource est obligatoire.")
+        
+        valid_types = [choice[0] for choice in TYPE_CHOICES]
+        if value not in valid_types:
+            raise ValidationError(f"Type invalide. Types autorisés: {', '.join(valid_types)}")
+        
+        return value
+
     def validate(self, data):
         type_ressource = data.get('type')
-
+        
+        # Vérifier que le type est présent
+        if not type_ressource:
+            raise ValidationError("Le type de ressource est obligatoire.")
+        
+        # Validations spécifiques selon le type
         if type_ressource in ['guide', 'fiche'] and not data.get('upload'):
             raise ValidationError(f"Un fichier est requis pour le type '{type_ressource}'.")
+        
         if type_ressource == 'video' and not data.get('lien'):
-            raise ValidationError("un lien est requis pour le type 'video'.")
+            raise ValidationError("Un lien est requis pour le type 'video'.")
+        
         if type_ressource == 'podcast' and not (data.get('upload') or data.get('lien')):
             raise ValidationError("Un fichier ou un lien est requis pour le type 'podcast'.")
-       
+        
         return data
 
+    def create(self, validated_data):
+        """Méthode de création personnalisée"""
+        # S'assurer que le type est bien défini
+        if 'type' not in validated_data or not validated_data['type']:
+            raise ValidationError("Le type de ressource est obligatoire.")
+        
+        return super().create(validated_data)

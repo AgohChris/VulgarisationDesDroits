@@ -56,7 +56,7 @@ class Ressource(models.Model):
     description = models.TextField(blank=True)
     upload = models.FileField(upload_to='ressources/', null=True, blank=True)
     lien = models.URLField(max_length=200, blank=True, null=True) 
-    type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='guide')
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES)
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -75,6 +75,7 @@ class Ressource(models.Model):
                     'date_ajout': self.date_ajout
                 }
             )
+        
         elif self.type == 'fiche':
             Fiche.objects.get_or_create(
                 ressource_ptr=self,
@@ -86,6 +87,7 @@ class Ressource(models.Model):
                     'date_ajout': self.date_ajout
                 }
             )
+        
         elif self.type == 'podcast':
             Podcast.objects.get_or_create(
                 ressource_ptr=self,
@@ -97,6 +99,7 @@ class Ressource(models.Model):
                     'date_ajout': self.date_ajout
                 }
             )
+        
         elif self.type == 'video':
             Video.objects.get_or_create(
                 ressource_ptr=self,
