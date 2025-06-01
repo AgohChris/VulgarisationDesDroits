@@ -10,6 +10,8 @@ import { fetchJudicialSystemCount } from '@/api/structureJudicial';
 import { fetchCategoryCount } from '@/api/categorieDroit';
 import { fetchSubjectCount } from '@/api/sujetDroit';
 import { fetchGlossaryCount } from '@/api/glossary';
+import { fetchCountRessources } from '@/api/ressources';
+
 
 import DashboardStats from '@/components/admin/dashboard/DashboardStats';
 import DailyVisitorsChart from '@/components/admin/dashboard/DailyVisitorsChart';
@@ -54,10 +56,9 @@ const AdminDashboardPage = () => {
 
         // Récupérer d'autres statistiques depuis localStorage
         const glossaryCount = await fetchGlossaryCount();
-        // const thematicsCount = JSON.parse(localStorage.getItem('thematicItems') || '[]').length;
-        const resourcesCount = JSON.parse(localStorage.getItem('resourceItems') || '[]').length;
-       
-         // Récupérer le nombre de catégories de droit
+        const resourcesCount = await fetchCountRessources();
+
+        // Récupérer le nombre de catégories de droit
         const categoryCount = await fetchCategoryCount();
 
         // Récupérer le nombre de sujets de droit

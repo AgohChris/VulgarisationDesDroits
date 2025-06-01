@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from '@/components/ui/label';
-import { Checkbox } from "@/components/ui/checkbox"; // Assuming you have this or will create it
+import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle, Edit, Trash2, FileText, Video, Headphones, BookOpen, ExternalLink } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getAllRessources, createRessource, updateRessource, deleteRessource } from '@/api/ressources';
 
 const resourceTypes = [
   { value: 'guide', label: 'Guide Pratique', icon: FileText, color: 'blue' },
@@ -24,29 +25,43 @@ const resourceTypes = [
   { value: 'fiche', label: 'Fiche Thématique', icon: BookOpen, color: 'green' },
 ];
 
-const initialResourcesData = [
-  { id: 1, type: 'guide', title: 'Guide du locataire (Admin)', description: 'PDF sur les droits des locataires.', link: '/ressources/guides/guide-locataire.pdf', isExternal: false },
-  { id: 2, type: 'video', title: 'Comprendre le Droit du Travail (Admin)', description: 'Vidéo YouTube expliquant les bases.', link: 'https://youtube.com/watch?v=examplevideo', isExternal: true },
-  { id: 3, type: 'podcast', title: 'Podcast: Litiges de Voisinage (Admin)', description: 'Audio sur la résolution des conflits.', link: '/ressources/podcasts/litiges-voisinage.mp3', isExternal: false },
-];
 
 const AdminResourcesPage = () => {
-  const [resources, setResources] = useState(initialResourcesData);
+  const [resources, setResources] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
-  const [file, setFile] = useState(null); // For file uploads
+  const [file, setFile] = useState(null);
   const [type, setType] = useState(resourceTypes[0].value);
   const [isExternal, setIsExternal] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const response = await getAllRessources();
+        setResources(response);
+      } catch (error) {
+
+      
+        console.error('Erreur lors de la récupération des ressources :', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de récupérer les ressources.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchResources();
+  }, []);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
-    // Validate file type based on the selected resource type
     const allowedTypes = {
       guide: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-powerpoint', 'image/jpeg', 'image/png'],
       fiche: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-powerpoint', 'image/jpeg', 'image/png'],
@@ -65,109 +80,53 @@ const AdminResourcesPage = () => {
     setFile(selectedFile);
   };
 
-  const renderUploadField = () => (
-    <div
-      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-purple-500 transition"
-      onClick={() => document.getElementById('fileUploadInput').click()}
-    >
-      <input
-        id="fileUploadInput"
-        type="file"
-        onChange={handleFileChange}
-        className="hidden"
-        accept={
-          type === 'guide' || type === 'fiche'
-            ? '.pdf,.docx,.pptx,.jpeg,.jpg,.png'
-            : type === 'podcast'
-            ? '.mp3,.wav,.ogg'
-            : ''
-        }
-      />
-      <div className="flex flex-col items-center">
-        {file ? (
-          <>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-green-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            <p className="text-gray-600 mt-2">{file.name}</p>
-          </>
-        ) : (
-          <>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 15a4 4 0 004 4h10a4 4 0 004-4M7 10l5-5m0 0l5 5m-5-5v12"
-              />
-            </svg>
-            <p className="text-gray-600 mt-2">
-              Cliquez pour uploader ou glissez-déposez
-            </p>
-            <p className="text-xs text-gray-400">
-              {type === 'guide' || type === 'fiche'
-                ? 'PDF, DOCX, PPTX, JPEG, PNG (MAX. 10 Mo)'
-                : type === 'podcast'
-                ? 'MP3, WAV, OGG (MAX. 10 Mo)'
-                : ''}
-            </p>
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim() || (!link.trim() && !file)) {
+
+    if (!title || !description || !type || (!link && !file)) {
       toast({
-        title: "Champs requis",
-        description: "Le titre, la description et le lien ou fichier de la ressource sont obligatoires.",
+        title: "Erreur",
+        description: "Tous les champs obligatoires doivent être remplis.",
         variant: "destructive",
       });
       return;
     }
 
-    const newItem = {
-      id: Date.now(),
-      title,
-      description,
-      link: file ? URL.createObjectURL(file) : link, // Use file URL if uploaded
-      type,
-      isExternal,
-    };
-
-    if (currentItem) {
-      setResources(resources.map(r => r.id === currentItem.id ? newItem : r));
-      toast({ title: "Ressource modifiée", description: `La ressource "${title}" a été mise à jour.` });
-    } else {
-      setResources([...resources, newItem]);
-      toast({ title: "Ressource ajoutée", description: `La ressource "${title}" a été ajoutée.` });
+    const formData = new FormData();
+    formData.append('intitule', title);
+    formData.append('description', description);
+    formData.append('type', type);
+    if (file) {
+      formData.append('upload', file);
     }
-    closeModal();
+    if (link) {
+      formData.append('lien', link);
+    }
+
+    console.log('Données envoyées :', formData);
+
+    try {
+      const newResource = await createRessource(formData);
+      setResources((prevResources) => [...prevResources, newResource]);
+      toast({ title: 'Ressource ajoutée', description: `La ressource "${title}" a été ajoutée.` });
+      closeModal();
+    } catch (error) {
+      const serverMessage = error.response?.data?.message || 'Erreur inconnue';
+      console.error('Erreur lors de l\'ajout de la ressource :', serverMessage);
+      toast({ title: 'Erreur', description: serverMessage, variant: 'destructive' });
+    }
   };
 
-  const handleDelete = (id, resTitle) => {
-     if (window.confirm(`Êtes-vous sûr de vouloir supprimer la ressource "${resTitle}" ?`)) {
-      setResources(resources.filter(r => r.id !== id));
-      toast({ title: "Ressource supprimée", description: `La ressource "${resTitle}" a été supprimée.`, variant: "destructive" });
+  const handleDelete = async (id, resTitle) => {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer la ressource "${resTitle}" ?`)) {
+      try {
+        await deleteRessource(id);
+        setResources((prevResources) => prevResources.filter((resource) => resource.id !== id));
+        toast({ title: 'Ressource supprimée', description: `La ressource "${resTitle}" a été supprimée.`, variant: 'destructive' });
+      } catch (error) {
+        console.error('Erreur lors de la suppression de la ressource :', error);
+        toast({ title: 'Erreur', description: 'Impossible de supprimer la ressource.', variant: 'destructive' });
+      }
     }
   };
 
@@ -252,24 +211,131 @@ const AdminResourcesPage = () => {
                   {type === 'guide' || type === 'fiche' ? 'Fichier à uploader' : type === 'video' ? 'Lien YouTube' : 'Lien ou fichier'}
                 </Label>
                 {type === 'guide' || type === 'fiche' ? (
-                  renderUploadField()
+                  <div
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-purple-500 transition"
+                    onClick={() => document.getElementById('fileUploadInput').click()}
+                  >
+                    <input
+                      id="fileUploadInput"
+                      type="file"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      accept=".pdf,.docx,.pptx,.jpeg,.jpg,.png"
+                    />
+                    <div className="flex flex-col items-center">
+                      {file ? (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-10 w-10 text-green-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          <p className="text-gray-600 mt-2">{file.name}</p>
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-10 w-10 text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 15a4 4 0 004 4h10a4 4 0 004-4M7 10l5-5m0 0l5 5m-5-5v12"
+                            />
+                          </svg>
+                          <p className="text-gray-600 mt-2">
+                            Cliquez pour uploader ou glissez-déposez
+                          </p>
+                          <p className="text-xs text-gray-400">PDF, DOCX, PPTX, JPEG, PNG (MAX. 10 Mo)</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 ) : type === 'podcast' ? (
                   <>
                     <Input
                       id="resourceLink"
                       value={link}
                       onChange={(e) => setLink(e.target.value)}
-                      placeholder="Lien (optionnel)"
+                      placeholder="Lien (ex: https://example.com/audio.mp3)"
+                      className="mb-2"
                     />
-                    <div className="mt-2">{renderUploadField()}</div>
+                    <div
+                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-purple-500 transition"
+                      onClick={() => document.getElementById('fileUploadInput').click()}
+                    >
+                      <input
+                        id="fileUploadInput"
+                        type="file"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept=".mp3,.wav,.ogg"
+                      />
+                      <div className="flex flex-col items-center">
+                        {file ? (
+                          <>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-10 w-10 text-green-500"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <p className="text-gray-600 mt-2">{file.name}</p>
+                          </>
+                        ) : (
+                          <>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-10 w-10 text-gray-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 15a4 4 0 004 4h10a4 4 0 004-4M7 10l5-5m0 0l5 5m-5-5v12"
+                              />
+                            </svg>
+                            <p className="text-gray-600 mt-2">
+                              Cliquez pour uploader ou glissez-déposez
+                            </p>
+                            <p className="text-xs text-gray-400">MP3, WAV, OGG (MAX. 10 Mo)</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </>
                 ) : (
                   <Input
-                    id="resourceLinkOrFile"
+                    id="resourceLink"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
-                    required={!file}
-                    placeholder="ex: https://youtube.com/watch?v=examplevideo"
+                    required
+                    placeholder="Lien (ex: https://youtube.com/watch?v=examplevideo)"
                   />
                 )}
               </div>
@@ -311,15 +377,19 @@ const AdminResourcesPage = () => {
                 <CardDescription className="text-xs text-gray-500">{getResourceLabel(resource.type)}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
+                {resource.intitule && <p className="text-sm font-bold text-gray-800">{resource.intitule}</p>}
                 <p className="text-sm text-gray-600 mb-2 h-16 overflow-hidden text-ellipsis">{resource.description}</p>
-                <a 
-                  href={resource.link} 
-                  target={resource.isExternal ? "_blank" : "_self"} 
-                  rel="noopener noreferrer"
-                  className="text-xs text-purple-600 hover:text-purple-800 break-all flex items-center"
-                >
-                  {resource.link} {resource.isExternal && <ExternalLink className="ml-1 h-3 w-3"/>}
-                </a>
+                {resource.type && <p className="text-xs text-gray-500">Type : {resource.type}</p>}
+                {resource.upload && (
+                  <a href={resource.upload} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-600 hover:text-purple-800">
+                    Télécharger le fichier
+                  </a>
+                )}
+                {resource.lien && (
+                  <a href={resource.lien} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-600 hover:text-purple-800">
+                    Voir le lien
+                  </a>
+                )}
               </CardContent>
               <CardFooter className="flex justify-end space-x-2 pt-4">
                  <Button variant="outline" size="sm" onClick={() => openModal(resource)}>

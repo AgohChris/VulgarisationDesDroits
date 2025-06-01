@@ -1,53 +1,85 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/ressources';
+// Base URL de l'API
+const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
-export const fetchResources = async () => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/liste`);
-    return response.data.data; // Retourne la liste des ressources
-  } catch (error) {
-    console.error("Erreur lors de la récupération des ressources :", error);
-    throw error;
-  }
+// Création d'une instance Axios avec des paramètres par défaut
+const axiosInstance = axios.create({ baseURL: API_BASE_URL });
+
+// Exemple d'amélioration pour la gestion des erreurs
+const handleError = (error, action) => {
+  const message = error.response?.data?.message || error.message || `Erreur lors de ${action}`;
+  console.error(message);
+  throw new Error(message);
 };
 
-export const addResource = async (data) => {
+// Fonction pour lister toutes les ressources
+export const getAllRessources = async (page = 1, limit = 10) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/ajout`, data);
+    const response = await axiosInstance.get(`/ressources/liste?page=${page}&limit=${limit}`);
+    console.log('Données reçues :', response.data); // Debug
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de l'ajout de la ressource :", error.response?.data || error.message);
-    throw error;
+    handleError(error, "la récupération des ressources");
   }
 };
 
-export const updateResource = async (id, data) => {
+// Fonction pour ajouter une ressource
+export const createRessource = async (formData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/modifier/${id}`, data);
+    const response = await axiosInstance.post('/ressources/ajouts', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la mise à jour de la ressource :", error.response?.data || error.message);
-    throw error;
+    handleError(error, "la création de la ressource");
   }
 };
 
-export const deleteResource = async (id) => {
+
+// Fonction pour modifier une ressource
+export const updateRessource = async (id, ressourceData) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/supprimer/${id}`);
+    const response = await axiosInstance.put(`/ressources/${id}/update`, {
+      intitule: ressourceData.title,
+      description: ressourceData.description,
+      type: ressourceData.type,
+      upload: ressourceData.upload || null,
+      lien: ressourceData.link || null,
+    });
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la suppression de la ressource :", error.response?.data || error.message);
+    handleError(error, "la modification de la ressource");
+  }
+};
+
+// Fonction pour supprimer une ressource
+export const deleteRessource = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/ressources/${id}/delete`);
+    return response.data;
+  } catch (error) {
+    handleError(error, "la suppression de la ressource");
+  }
+};
+
+// Fonction pour compter les ressources
+export const fetchCountRessources = async () => {
+  try {
+    const response = await axiosInstance.get('/ressources/count');
+    return response.data.count_ressource;
+  } catch (error) {
+    console.error('Erreur lors du comptage des ressources :', error);
     throw error;
   }
 };
 
-export const fetchResourceCount = async () => {
+// Fonction pour lister les ressources par type
+export const getRessourcesByType = async (type) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/count`);
-    return response.data.total; // Retourne le nombre total de ressources
+    const response = await axiosInstance.get(`/ressources/liste/type/${type}`);
+    return response.data;
   } catch (error) {
-    console.error("Erreur lors de la récupération du nombre de ressources :", error);
-    throw error;
+    handleError(error, `la récupération des ressources de type ${type}`);
   }
 };

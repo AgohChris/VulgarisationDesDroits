@@ -4,52 +4,30 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Eye, Search, ArrowLeft } from "lucide-react";
-
-const guidesData = [
-	{
-		id: 1,
-		title: "Guide complet du locataire",
-		description: "Tout savoir sur vos droits et devoirs en tant que locataire.",
-		type: "PDF",
-		fileName: "guide_locataire_complet.pdf",
-	},
-	{
-		id: 2,
-		title: "Vos droits en cas de licenciement abusif",
-		description: "Comprendre les recours possibles face à un licenciement injustifié.",
-		type: "PDF",
-		fileName: "droits_licenciement_abusif.pdf",
-	},
-	{
-		id: 3,
-		title: "Comment contester une amende routière",
-		description: "Les étapes clés pour une contestation efficace.",
-		type: "PDF",
-		fileName: "contester_amende_routiere.pdf",
-	},
-	{
-		id: 4,
-		title: "Guide de la création d'entreprise",
-		description: "Les démarches essentielles pour lancer votre activité.",
-		type: "PDF",
-		fileName: "guide_creation_entreprise.pdf",
-	},
-	{
-		id: 5,
-		title: "Comprendre le contrat de travail",
-		description: "Les clauses importantes et ce qu'elles impliquent.",
-		type: "PDF",
-		fileName: "comprendre_contrat_travail.pdf",
-	},
-];
+import { getRessourcesByType } from '@/api/ressources'; // Import de l'API
 
 const GuidesPage = () => {
 	const navigate = useNavigate();
 	const [searchTerm, setSearchTerm] = useState("");
+	const [guidesData, setGuidesData] = useState([]); // État pour les guides
 	const [filteredGuides, setFilteredGuides] = useState(guidesData);
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
+	}, []);
+
+	useEffect(() => {
+		const fetchGuides = async () => {
+			try {
+				const response = await getRessourcesByType('guide'); // Appel à l'API
+				setGuidesData(response);
+				setFilteredGuides(response);
+			} catch (error) {
+				console.error('Erreur lors de la récupération des guides :', error);
+			}
+		};
+
+		fetchGuides();
 	}, []);
 
 	useEffect(() => {

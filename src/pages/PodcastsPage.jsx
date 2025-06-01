@@ -1,59 +1,32 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlayCircle, Download, Headphones, Search, ArrowLeft } from "lucide-react";
 
-const podcastsData = [
-	{
-		id: 1,
-		title: "Le droit du travail décrypté",
-		episode: "Épisode 1: Le contrat de travail",
-		duration: "15:30",
-		fileName: "podcast_droit_travail_ep1.mp3",
-	},
-	{
-		id: 2,
-		title: "Justice au quotidien",
-		episode: "Focus sur les litiges de voisinage",
-		duration: "22:10",
-		fileName: "podcast_justice_voisinage.mp3",
-	},
-	{
-		id: 3,
-		title: "Les arcanes du droit de la famille",
-		episode: "Le divorce par consentement mutuel",
-		duration: "18:45",
-		fileName: "podcast_droit_famille_divorce.mp3",
-	},
-	{
-		id: 4,
-		title: "Consommation : connaissez vos droits",
-		episode: "Achats en ligne : les pièges à éviter",
-		duration: "20:00",
-		fileName: "podcast_consommation_achats_ligne.mp3",
-	},
-	{
-		id: 5,
-		title: "L'actualité juridique en bref",
-		episode: "Les dernières réformes importantes",
-		duration: "12:05",
-		fileName: "podcast_actualite_juridique.mp3",
-	},
-];
-
 const PodcastsPage = () => {
 	const navigate = useNavigate();
+	const [podcasts, setPodcasts] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [filteredPodcasts, setFilteredPodcasts] = useState(podcastsData);
+	const [filteredPodcasts, setFilteredPodcasts] = useState([]);
 
 	useEffect(() => {
-		window.scrollTo(0, 0);
+		const fetchPodcasts = async () => {
+			try {
+				const response = await getRessourcesByType('podcast');
+				setPodcasts(response);
+				setFilteredPodcasts(response);
+			} catch (error) {
+				console.error('Erreur lors du chargement des podcasts:', error);
+			}
+		};
+		fetchPodcasts();
 	}, []);
 
 	useEffect(() => {
-		const results = podcastsData.filter((podcast) =>
+		const results = podcasts.filter((podcast) =>
 			podcast.title.toLowerCase().includes(searchTerm.toLowerCase())
 		);
 		setFilteredPodcasts(results);
