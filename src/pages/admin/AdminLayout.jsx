@@ -31,7 +31,7 @@ const AdminLayout = () => {
     // { name: 'Thématiques', icon: ListTree, path: '/admin/thematiques' },
     { name: 'Catégories de Droit', icon: Library, path: '/admin/categories-droit' },
     { name: 'Sujets de Droit', icon: ListChecks, path: '/admin/sujets-droit' },
-    { name: 'Ressources', icon: FileText, path: '/admin/ressources' },
+    // { name: 'Ressources', icon: FileText, path: '/admin/ressources' },
     { name: 'Newsletter', icon: Mail, path: '/admin/newsletter' },
     { name: 'Système Judiciaire', icon: Scale, path: '/admin/systeme-judiciaire' },
   ];

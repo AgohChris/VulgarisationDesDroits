@@ -1,0 +1,187 @@
+hook.js:608 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. Error Component Stack
+    at BrowserRouter (react-router-dom.js?v=2afe7670:5267:5)
+overrideMethod @ hook.js:608
+warnOnce @ react-router-dom.js?v=2afe7670:4410
+logDeprecation @ react-router-dom.js?v=2afe7670:4413
+logV6DeprecationWarnings @ react-router-dom.js?v=2afe7670:4416
+(anonymous) @ react-router-dom.js?v=2afe7670:5291
+commitHookEffectListMount @ chunk-G52XTN3B.js?v=2afe7670:16936
+commitPassiveMountOnFiber @ chunk-G52XTN3B.js?v=2afe7670:18184
+commitPassiveMountEffects_complete @ chunk-G52XTN3B.js?v=2afe7670:18157
+commitPassiveMountEffects_begin @ chunk-G52XTN3B.js?v=2afe7670:18147
+commitPassiveMountEffects @ chunk-G52XTN3B.js?v=2afe7670:18137
+flushPassiveEffectsImpl @ chunk-G52XTN3B.js?v=2afe7670:19518
+flushPassiveEffects @ chunk-G52XTN3B.js?v=2afe7670:19475
+performSyncWorkOnRoot @ chunk-G52XTN3B.js?v=2afe7670:18896
+flushSyncCallbacks @ chunk-G52XTN3B.js?v=2afe7670:9135
+commitRootImpl @ chunk-G52XTN3B.js?v=2afe7670:19460
+commitRoot @ chunk-G52XTN3B.js?v=2afe7670:19305
+finishConcurrentRender @ chunk-G52XTN3B.js?v=2afe7670:18833
+performConcurrentWorkOnRoot @ chunk-G52XTN3B.js?v=2afe7670:18746
+workLoop @ chunk-G52XTN3B.js?v=2afe7670:197
+flushWork @ chunk-G52XTN3B.js?v=2afe7670:176
+performWorkUntilDeadline @ chunk-G52XTN3B.js?v=2afe7670:384
+hook.js:608 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. Error Component Stack
+    at BrowserRouter (react-router-dom.js?v=2afe7670:5267:5)
+overrideMethod @ hook.js:608
+warnOnce @ react-router-dom.js?v=2afe7670:4410
+logDeprecation @ react-router-dom.js?v=2afe7670:4413
+logV6DeprecationWarnings @ react-router-dom.js?v=2afe7670:4419
+(anonymous) @ react-router-dom.js?v=2afe7670:5291
+commitHookEffectListMount @ chunk-G52XTN3B.js?v=2afe7670:16936
+commitPassiveMountOnFiber @ chunk-G52XTN3B.js?v=2afe7670:18184
+commitPassiveMountEffects_complete @ chunk-G52XTN3B.js?v=2afe7670:18157
+commitPassiveMountEffects_begin @ chunk-G52XTN3B.js?v=2afe7670:18147
+commitPassiveMountEffects @ chunk-G52XTN3B.js?v=2afe7670:18137
+flushPassiveEffectsImpl @ chunk-G52XTN3B.js?v=2afe7670:19518
+flushPassiveEffects @ chunk-G52XTN3B.js?v=2afe7670:19475
+performSyncWorkOnRoot @ chunk-G52XTN3B.js?v=2afe7670:18896
+flushSyncCallbacks @ chunk-G52XTN3B.js?v=2afe7670:9135
+commitRootImpl @ chunk-G52XTN3B.js?v=2afe7670:19460
+commitRoot @ chunk-G52XTN3B.js?v=2afe7670:19305
+finishConcurrentRender @ chunk-G52XTN3B.js?v=2afe7670:18833
+performConcurrentWorkOnRoot @ chunk-G52XTN3B.js?v=2afe7670:18746
+workLoop @ chunk-G52XTN3B.js?v=2afe7670:197
+flushWork @ chunk-G52XTN3B.js?v=2afe7670:176
+performWorkUntilDeadline @ chunk-G52XTN3B.js?v=2afe7670:384
+ressources.js:20 Données reçues : (2) [{…}, {…}]
+ressources.js:20 Données reçues : (2) [{…}, {…}]
+ressources.js:20 Données reçues : (2) [{…}, {…}]
+ressources.js:20 Données reçues : (2) [{…}, {…}]
+hook.js:608 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. Error Component Stack
+    at DescriptionWarning (@radix-ui_react-dialog.js?v=2afe7670:1435:29)
+    at @radix-ui_react-dialog.js?v=2afe7670:1338:13
+    at @radix-ui_react-dialog.js?v=2afe7670:1257:58
+    at Presence (chunk-GRYWVA3J.js?v=2afe7670:201:11)
+    at @radix-ui_react-dialog.js?v=2afe7670:1248:64
+    at chunk-VXDG2C36.js?v=2afe7670:80:13
+    at chunk-VXDG2C36.js?v=2afe7670:56:13
+    at chunk-UCM5RQJF.js?v=2afe7670:43:13
+    at chunk-X7NEB5WY.js?v=2afe7670:27:22
+    at Presence (chunk-GRYWVA3J.js?v=2afe7670:201:11)
+    at Provider (chunk-GRYWVA3J.js?v=2afe7670:43:15)
+    at DialogPortal (@radix-ui_react-dialog.js?v=2afe7670:1210:11)
+    at _c3 (dialog.jsx:23:43)
+    at Provider (chunk-GRYWVA3J.js?v=2afe7670:43:15)
+    at Dialog (@radix-ui_react-dialog.js?v=2afe7670:1150:5)
+    at div (<anonymous>)
+    at MotionComponent (framer-motion.js?v=2afe7670:278:40)
+    at div (<anonymous>)
+    at AdminResourcesPage (AdminResourcesPage.jsx:29:37)
+    at RenderedRoute (react-router-dom.js?v=2afe7670:4104:5)
+    at Outlet (react-router-dom.js?v=2afe7670:4511:26)
+    at div (<anonymous>)
+    at main (<anonymous>)
+    at div (<anonymous>)
+    at AdminLayout (AdminLayout.jsx:10:45)
+    at ProtectedAdminRoute (App.jsx:55:32)
+    at RenderedRoute (react-router-dom.js?v=2afe7670:4104:5)
+    at Routes (react-router-dom.js?v=2afe7670:4575:5)
+    at div (<anonymous>)
+    at App (<anonymous>)
+    at Router (react-router-dom.js?v=2afe7670:4518:15)
+    at BrowserRouter (react-router-dom.js?v=2afe7670:5267:5)
+overrideMethod @ hook.js:608
+(anonymous) @ @radix-ui_react-dialog.js?v=2afe7670:1444
+commitHookEffectListMount @ chunk-G52XTN3B.js?v=2afe7670:16936
+commitPassiveMountOnFiber @ chunk-G52XTN3B.js?v=2afe7670:18184
+commitPassiveMountEffects_complete @ chunk-G52XTN3B.js?v=2afe7670:18157
+commitPassiveMountEffects_begin @ chunk-G52XTN3B.js?v=2afe7670:18147
+commitPassiveMountEffects @ chunk-G52XTN3B.js?v=2afe7670:18137
+flushPassiveEffectsImpl @ chunk-G52XTN3B.js?v=2afe7670:19518
+flushPassiveEffects @ chunk-G52XTN3B.js?v=2afe7670:19475
+commitRootImpl @ chunk-G52XTN3B.js?v=2afe7670:19444
+commitRoot @ chunk-G52XTN3B.js?v=2afe7670:19305
+performSyncWorkOnRoot @ chunk-G52XTN3B.js?v=2afe7670:18923
+flushSyncCallbacks @ chunk-G52XTN3B.js?v=2afe7670:9135
+(anonymous) @ chunk-G52XTN3B.js?v=2afe7670:18655
+hook.js:608 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+overrideMethod @ hook.js:608
+(anonymous) @ @radix-ui_react-dialog.js?v=2afe7670:1444
+commitHookEffectListMount @ chunk-G52XTN3B.js?v=2afe7670:16936
+invokePassiveEffectMountInDEV @ chunk-G52XTN3B.js?v=2afe7670:18352
+invokeEffectsInDev @ chunk-G52XTN3B.js?v=2afe7670:19729
+commitDoubleInvokeEffectsInDEV @ chunk-G52XTN3B.js?v=2afe7670:19714
+flushPassiveEffectsImpl @ chunk-G52XTN3B.js?v=2afe7670:19531
+flushPassiveEffects @ chunk-G52XTN3B.js?v=2afe7670:19475
+commitRootImpl @ chunk-G52XTN3B.js?v=2afe7670:19444
+commitRoot @ chunk-G52XTN3B.js?v=2afe7670:19305
+performSyncWorkOnRoot @ chunk-G52XTN3B.js?v=2afe7670:18923
+flushSyncCallbacks @ chunk-G52XTN3B.js?v=2afe7670:9135
+(anonymous) @ chunk-G52XTN3B.js?v=2afe7670:18655
+ressources:1 Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <button.flex h-10 items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full mt-1>
+Ancestor with aria-hidden: <div.fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg sm:max-w-lg max-h-[90vh] overflow-y-auto#radix-:rr:> <div role=​"dialog" id=​"radix-:​rr:​" aria-describedby=​"radix-:​rt:​" aria-labelledby=​"radix-:​rs:​" data-state=​"open" class=​"fixed left-[50%]​ top-[50%]​ z-50 grid w-full max-w-lg translate-x-[-50%]​ translate-y-[-50%]​ gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]​:​animate-in data-[state=closed]​:​animate-out data-[state=closed]​:​fade-out-0 data-[state=open]​:​fade-in-0 data-[state=closed]​:​zoom-out-95 data-[state=open]​:​zoom-in-95 data-[state=closed]​:​slide-out-to-left-1/​2 data-[state=closed]​:​slide-out-to-top-[48%]​ data-[state=open]​:​slide-in-from-left-1/​2 data-[state=open]​:​slide-in-from-top-[48%]​ sm:​rounded-lg sm:​max-w-lg max-h-[90vh]​ overflow-y-auto" tabindex=​"-1" style=​"pointer-events:​ auto;​" data-aria-hidden=​"true" aria-hidden=​"true">​…​</div>​gridscroll
+ressources.js:43 
+            
+            
+           PUT http://127.0.0.1:8080/api/ressources/42/update 400 (Bad Request)
+dispatchXhrRequest @ axios.js?v=2afe7670:1659
+xhr @ axios.js?v=2afe7670:1539
+dispatchRequest @ axios.js?v=2afe7670:2014
+_request @ axios.js?v=2afe7670:2235
+request @ axios.js?v=2afe7670:2126
+httpMethod @ axios.js?v=2afe7670:2264
+wrap @ axios.js?v=2afe7670:8
+updateRessource @ ressources.js:43
+handleSubmit @ AdminResourcesPage.jsx:126
+callCallback2 @ chunk-G52XTN3B.js?v=2afe7670:3674
+invokeGuardedCallbackDev @ chunk-G52XTN3B.js?v=2afe7670:3699
+invokeGuardedCallback @ chunk-G52XTN3B.js?v=2afe7670:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-G52XTN3B.js?v=2afe7670:3736
+executeDispatch @ chunk-G52XTN3B.js?v=2afe7670:7016
+processDispatchQueueItemsInOrder @ chunk-G52XTN3B.js?v=2afe7670:7036
+processDispatchQueue @ chunk-G52XTN3B.js?v=2afe7670:7045
+dispatchEventsForPlugins @ chunk-G52XTN3B.js?v=2afe7670:7053
+(anonymous) @ chunk-G52XTN3B.js?v=2afe7670:7177
+batchedUpdates$1 @ chunk-G52XTN3B.js?v=2afe7670:18941
+batchedUpdates @ chunk-G52XTN3B.js?v=2afe7670:3579
+dispatchEventForPluginEventSystem @ chunk-G52XTN3B.js?v=2afe7670:7176
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-G52XTN3B.js?v=2afe7670:5478
+dispatchEvent @ chunk-G52XTN3B.js?v=2afe7670:5472
+dispatchDiscreteEvent @ chunk-G52XTN3B.js?v=2afe7670:5449
+ressources:85 Request failed with status code 400
+overrideMethod @ hook.js:608
+console.error @ ressources:85
+handleError @ ressources.js:12
+updateRessource @ ressources.js:52
+await in updateRessource
+handleSubmit @ AdminResourcesPage.jsx:126
+callCallback2 @ chunk-G52XTN3B.js?v=2afe7670:3674
+invokeGuardedCallbackDev @ chunk-G52XTN3B.js?v=2afe7670:3699
+invokeGuardedCallback @ chunk-G52XTN3B.js?v=2afe7670:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-G52XTN3B.js?v=2afe7670:3736
+executeDispatch @ chunk-G52XTN3B.js?v=2afe7670:7016
+processDispatchQueueItemsInOrder @ chunk-G52XTN3B.js?v=2afe7670:7036
+processDispatchQueue @ chunk-G52XTN3B.js?v=2afe7670:7045
+dispatchEventsForPlugins @ chunk-G52XTN3B.js?v=2afe7670:7053
+(anonymous) @ chunk-G52XTN3B.js?v=2afe7670:7177
+batchedUpdates$1 @ chunk-G52XTN3B.js?v=2afe7670:18941
+batchedUpdates @ chunk-G52XTN3B.js?v=2afe7670:3579
+dispatchEventForPluginEventSystem @ chunk-G52XTN3B.js?v=2afe7670:7176
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-G52XTN3B.js?v=2afe7670:5478
+dispatchEvent @ chunk-G52XTN3B.js?v=2afe7670:5472
+dispatchDiscreteEvent @ chunk-G52XTN3B.js?v=2afe7670:5449
+ressources:85 Erreur lors de l'enregistrement de la ressource : Error: Request failed with status code 400
+    at handleError (ressources.js:13:9)
+    at updateRessource (ressources.js:52:5)
+    at async handleSubmit (AdminResourcesPage.jsx:126:13)
+overrideMethod @ hook.js:608
+console.error @ ressources:85
+handleSubmit @ AdminResourcesPage.jsx:132
+await in handleSubmit
+callCallback2 @ chunk-G52XTN3B.js?v=2afe7670:3674
+invokeGuardedCallbackDev @ chunk-G52XTN3B.js?v=2afe7670:3699
+invokeGuardedCallback @ chunk-G52XTN3B.js?v=2afe7670:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-G52XTN3B.js?v=2afe7670:3736
+executeDispatch @ chunk-G52XTN3B.js?v=2afe7670:7016
+processDispatchQueueItemsInOrder @ chunk-G52XTN3B.js?v=2afe7670:7036
+processDispatchQueue @ chunk-G52XTN3B.js?v=2afe7670:7045
+dispatchEventsForPlugins @ chunk-G52XTN3B.js?v=2afe7670:7053
+(anonymous) @ chunk-G52XTN3B.js?v=2afe7670:7177
+batchedUpdates$1 @ chunk-G52XTN3B.js?v=2afe7670:18941
+batchedUpdates @ chunk-G52XTN3B.js?v=2afe7670:3579
+dispatchEventForPluginEventSystem @ chunk-G52XTN3B.js?v=2afe7670:7176
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-G52XTN3B.js?v=2afe7670:5478
+dispatchEvent @ chunk-G52XTN3B.js?v=2afe7670:5472
+dispatchDiscreteEvent @ chunk-G52XTN3B.js?v=2afe7670:5449

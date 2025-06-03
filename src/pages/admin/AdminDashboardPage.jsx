@@ -10,7 +10,7 @@ import { fetchJudicialSystemCount } from '@/api/structureJudicial';
 import { fetchCategoryCount } from '@/api/categorieDroit';
 import { fetchSubjectCount } from '@/api/sujetDroit';
 import { fetchGlossaryCount } from '@/api/glossary';
-import { fetchCountRessources } from '@/api/ressources';
+// import { fetchCountRessources } from '@/api/ressources';
 
 
 import DashboardStats from '@/components/admin/dashboard/DashboardStats';
@@ -56,7 +56,7 @@ const AdminDashboardPage = () => {
 
         // Récupérer d'autres statistiques depuis localStorage
         const glossaryCount = await fetchGlossaryCount();
-        const resourcesCount = await fetchCountRessources();
+        // const resourcesCount = await fetchCountRessources();
 
         // Récupérer le nombre de catégories de droit
         const categoryCount = await fetchCategoryCount();
@@ -71,7 +71,7 @@ const AdminDashboardPage = () => {
           // { title: 'Thématiques', value: thematicsCount, icon: ListTree, color: 'text-green-500', bgColor: 'bg-green-100/50' },
           { title: 'Catégories de Droit', value: categoryCount, icon: Library, color: 'text-purple-500', bgColor: 'bg-purple-100/50' },
           { title: 'Sujets de Droit', value: subjectCount, icon: ListChecks, color: 'text-teal-500', bgColor: 'bg-teal-100/50' },
-          { title: 'Ressources Actives', value: resourcesCount, icon: FileText, color: 'text-indigo-500', bgColor: 'bg-indigo-100/50' },
+          // { title: 'Ressources Actives', value: resourcesCount, icon: FileText, color: 'text-indigo-500', bgColor: 'bg-indigo-100/50' },
           { title: 'Système Judiciaire', value: judicialSystemCount, icon: Scale, color: 'text-pink-500', bgColor: 'bg-pink-100/50' },
           { title: 'Abonnés Newsletter', value: newsletterSubscribersCount, icon: Mail, color: 'text-orange-500', bgColor: 'bg-orange-100/50' },
           { title: 'Interactions Chatbot', value: interactionCount, icon: MessageCircle, color: 'text-cyan-500', bgColor: 'bg-cyan-100/50' },

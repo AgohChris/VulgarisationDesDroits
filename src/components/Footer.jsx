@@ -36,13 +36,13 @@ const Footer = () => {
               <li><Link to="/" className="text-gray-400 hover:text-white transition-colors">Accueil</Link></li>
               <li><Link to="/glossaire" className="text-gray-400 hover:text-white transition-colors">Glossaire</Link></li>
               <li><Link to="/thematiques" className="text-gray-400 hover:text-white transition-colors">Thématiques</Link></li>
-              <li><Link to="/ressources" className="text-gray-400 hover:text-white transition-colors">Ressources</Link></li>
+              {/* <li><Link to="/ressources" className="text-gray-400 hover:text-white transition-colors">Ressources</Link></li> */}
               <li><Link to="/systeme-judiciaire" className="text-gray-400 hover:text-white transition-colors">Structure Judiciaire</Link></li>
               
             </ul>
           </div>
           
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-4">Ressources</h3>
             <ul className="space-y-2">
               <li><Link to="/ressources#guides" className="text-gray-400 hover:text-white transition-colors">Guides pratiques</Link></li>
@@ -50,7 +50,7 @@ const Footer = () => {
               <li><Link to="/ressources#podcasts" className="text-gray-400 hover:text-white transition-colors">Podcasts juridiques</Link></li>
               <li><Link to="/ressources#fiches" className="text-gray-400 hover:text-white transition-colors">Fiches thématiques</Link></li>
             </ul>
-          </div>
+          </div> */}
           
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact</h3>

@@ -20,31 +20,31 @@ const featureItems = [
 	{
 		icon: <FileText className="h-10 w-10 text-green-600" />,
 		title: "Fiches thématiques",
-		description: "Des explications claires sur les principaux domaines du droit organisées par thématiques.",
+		description: "Des explications claires sur les principaux domaines du droit organisées par thématiques. (bientôt disponible).",
 		delay: 0.3,
 	},
 	{
 		icon: <Users className="h-10 w-10 text-orange-600" />,
 		title: "Accessibilité pour tous",
-		description: "Interface adaptée aux personnes en situation de handicap et compatible avec les technologies d'assistance.",
+		description: "Interface adaptée aux personnes en situation de handicap et compatible avec les technologies d'assistance. ",
 		delay: 0.4,
 	},
 	{
 		icon: <VolumeX className="h-10 w-10 text-red-600" />,
 		title: "Contenu audio",
-		description: "Écoutez les explications juridiques pour une meilleure compréhension et accessibilité.",
+		description: "Écoutez les explications juridiques pour une meilleure compréhension et accessibilité. (bientôt disponible).",
 		delay: 0.5,
 	},
 	{
 		icon: <PlayCircle className="h-10 w-10 text-red-600" />, // Icône pour le contenu vidéo
 		title: "Contenu vidéo",
-		description: "Regardez et écoutez les explications juridiques pour une meilleure compréhension et accessibilité.",
+		description: "Regardez et écoutez les explications juridiques pour une meilleure compréhension et accessibilité. (bientôt disponible).",
 		delay: 0.6,
 	},
 	{
 		icon: <Lightbulb className="h-10 w-10 text-yellow-600" />,
 		title: "Exemples concrets",
-		description: "Des cas pratiques et des exemples du quotidien pour illustrer les concepts juridiques.",
+		description: "Des cas pratiques et des exemples du quotidien pour illustrer les concepts juridiques. (bientôt disponible).",
 		delay: 0.7,
 	},
 	{

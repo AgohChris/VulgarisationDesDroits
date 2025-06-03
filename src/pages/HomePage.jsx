@@ -26,7 +26,7 @@ const HomePage = () => {
       <GlossaryPreview />
       <ThematicSectionPreview />
       <JudicialSystemPreview />
-      <ResourcesPreview />
+      {/* <ResourcesPreview /> */}
       <motion.section 
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
