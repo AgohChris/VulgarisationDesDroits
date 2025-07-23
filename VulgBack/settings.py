@@ -21,7 +21,7 @@ DEBUG = False
 
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['https://vulgarisationdesdroits.onrender.com', 
+ALLOWED_HOSTS = ['vulgarisationdesdroits.onrender.com', 
                 '127.0.0.1',
                 'localhost']
 
@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'ChatbotAi',
     'corsheaders',
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://vulgarisationdesdroits.onrender.com",
+]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
