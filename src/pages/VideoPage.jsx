@@ -91,7 +91,7 @@ const VideoPage = () => {
 
             {/* Liste des vidéos */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredVideos.map((video, index) => (
+                {Array.isArray(filteredVideos) && filteredVideos.map((video, index) => (
                     <motion.div
                         key={video.id}
                         initial={{ opacity: 0, y: 20 }}

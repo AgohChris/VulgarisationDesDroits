@@ -85,7 +85,7 @@ const Glossary = () => {
           className="max-w-3xl mx-auto"
         >
           <Accordion type="single" collapsible className="w-full" defaultValue={filteredTerms.length > 0 && searchTerm ? "item-0" : undefined}>
-            {filteredTerms && filteredTerms.map((item, index) => (
+            {Array.isArray(filteredTerms) && filteredTerms.map((item, index) => (
               <AccordionItem key={index} value={`item-${index}`} className="glossary-item">
                 <AccordionTrigger className="text-lg font-medium hover:no-underline">
                   {item.titre}
