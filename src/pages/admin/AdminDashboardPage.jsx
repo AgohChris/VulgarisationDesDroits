@@ -97,7 +97,7 @@ const AdminDashboardPage = () => {
         Tableau de Bord Administrateur
       </motion.h1>
 
-      <DashboardStats stats={statsData} />
+      <DashboardStats stats={Array.isArray(statsData) ? statsData : []} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DailyVisitorsChart />
