@@ -15,7 +15,7 @@ const Glossary = () => {
   useEffect(() => {
     const loadGlossaries = async () => {
       const data = await fetchGlossaries();
-      setGlossaryTerms(data);
+      setGlossaryTerms(Array.isArray(data) ? data : []);
     };
     loadGlossaries();
   }, []);
@@ -24,7 +24,7 @@ const Glossary = () => {
     setSearchTerm(searchParams.get("q") || "");
   }, [searchParams]);
 
-  const filteredTerms = glossaryTerms.filter(item => 
+  const filteredTerms = (Array.isArray(glossaryTerms) ? glossaryTerms : []).filter(item => 
     item.titre.toLowerCase().includes(searchTerm.toLowerCase()) || 
     item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.exemple.toLowerCase().includes(searchTerm.toLowerCase())
