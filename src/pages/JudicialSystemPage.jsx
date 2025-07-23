@@ -14,7 +14,7 @@ const JudicialSystemPage = () => {
     const loadStructures = async () => {
       try {
         const data = await fetchStructures();
-        setEntries(data);
+        setEntries(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Erreur lors du chargement des structures judiciaires :", error);
       } finally {
@@ -25,7 +25,7 @@ const JudicialSystemPage = () => {
     loadStructures();
   }, []);
 
-  const filteredEntries = entries.filter(entry =>
+  const filteredEntries = (Array.isArray(entries) ? entries : []).filter(entry =>
     entry.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     entry.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
