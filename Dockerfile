@@ -20,13 +20,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY . /var/www/html
 
 # Définit le répertoire de travail
-WORKDIR /var/www/html
+WORKDIR /var/www/html/public
 
 # Installe les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
 # Donne les bons droits au dossier de stockage et cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 # (Optionnel) Installe Node.js et build les assets si tu utilises Laravel Mix/Vite
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
