@@ -19,14 +19,17 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copie le code source dans le conteneur
 COPY . /var/www/html
 
-# Définit le répertoire de travail
-WORKDIR /var/www/html/public
+# Change le DocumentRoot d'Apache pour pointer vers /var/www/html/public
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
+# Définit le répertoire de travail pour composer et npm
+WORKDIR /var/www/html
 
 # Installe les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
 # Donne les bons droits au dossier de stockage et cache
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # (Optionnel) Installe Node.js et build les assets si tu utilises Laravel Mix/Vite
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
