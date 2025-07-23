@@ -43,11 +43,11 @@ const AdminDashboardPage = () => {
     const fetchStats = async () => {
       try {
         // Récupérer le nombre d'interactions depuis le backend
-        const interactionResponse = await axios.get('@https://vulgarisationdesdroits-b02f.onrender.com/api/chatbot/interactions/count/');
+        const interactionResponse = await axios.get('https://vulgarisationdesdroits-b02f.onrender.com/api/chatbot/interactions/count/');
         const interactionCount = interactionResponse.data.interaction_count;
 
         // Récupérer le nombre d'abonnés à la newsletter depuis le backend
-        const newsletterResponse = await axios.get('@https://vulgarisationdesdroits-b02f.onrender.com/api/newsletter/abonnee/count/');
+        const newsletterResponse = await axios.get('https://vulgarisationdesdroits-b02f.onrender.com/api/newsletter/abonnee/count/');
         const newsletterSubscribersCount = newsletterResponse.data.subscriber_count;
         
         const judicialSystemCount = await fetchJudicialSystemCount();

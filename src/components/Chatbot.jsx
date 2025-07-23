@@ -42,7 +42,7 @@ const Chatbot = () => {
 
     try {
       // Appeler l'API backend pour obtenir une réponse
-      const response = await axios.post("@https://vulgarisationdesdroits-b02f.onrender.com/api/chatbot/", {
+      const response = await axios.post("https://vulgarisationdesdroits-b02f.onrender.com/api/chatbot/", {
         message: inputValue,
         session_id: sessionId, // Inclure l'ID de session
       });

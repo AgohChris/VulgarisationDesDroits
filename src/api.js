@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '@https://vulgarisationdesdroits-b02f.onrender.com/api',
+  baseURL: 'https://vulgarisationdesdroits-b02f.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = '@https://vulgarisationdesdroits-vleq.onrender.com/api/categorie-droit';
+const API_BASE_URL = 'https://vulgarisationdesdroits-vleq.onrender.com/api/categorie-droit';
 
 export const fetchCategories = async () => {
   try {
@@ -44,7 +44,7 @@ export const deleteCategory = async (id) => {
 
 export const fetchCategoryCount = async () => {
   try {
-    const response = await axios.get('@https://vulgarisationdesdroits-vleq.onrender.com/api/categorie-droit/count');
+    const response = await axios.get('https://vulgarisationdesdroits-vleq.onrender.com/api/categorie-droit/count');
     return response.data.total; // Retourne le total des catégories
   } catch (error) {
     console.error("Erreur lors de la récupération du nombre de catégories :", error);
@@ -54,7 +54,7 @@ export const fetchCategoryCount = async () => {
 
 export const fetchCategoriesWithSubjects = async () => {
   try {
-    const response = await axios.get('@https://vulgarisationdesdroits-vleq.onrender.com/api/categorie-droit/avec-sujets');
+    const response = await axios.get('https://vulgarisationdesdroits-vleq.onrender.com/api/categorie-droit/avec-sujets');
     return response.data.data; // Retourne les catégories avec leurs sujets
   } catch (error) {
     console.error("Erreur lors de la récupération des catégories avec sujets :", error);

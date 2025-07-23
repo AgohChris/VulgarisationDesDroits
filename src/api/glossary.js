@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = '@https://vulgarisationdesdroits-vleq.onrender.com/api'; // Remplacez par l'URL de votre backend Laravel
+const API_BASE_URL = 'https://vulgarisationdesdroits-vleq.onrender.com/api'; // Remplacez par l'URL de votre backend Laravel
 
 export const fetchGlossaries = async () => {
   try {
@@ -62,7 +62,7 @@ const loadGlossaries = async () => {
 
 export const fetchGlossaryCount = async () => {
   try {
-    const response = await axios.get('@https://vulgarisationdesdroits-vleq.onrender.com/api/glossaire/count');
+    const response = await axios.get('https://vulgarisationdesdroits-vleq.onrender.com/api/glossaire/count');
     return response.data.total; // Retourne uniquement le nombre total
   } catch (error) {
     console.error("Erreur lors de la récupération du nombre de termes du glossaire :", error);
