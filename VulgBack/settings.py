@@ -17,11 +17,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ['.onrender.com']
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.onrender.com']
 
 
 # Application definition
@@ -73,17 +73,6 @@ WSGI_APPLICATION = 'VulgBack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default':{
-#         'ENGINE':'django.db.backends.postgresql',
-#         'NAME':'vulgarisation',
-#         'USER':'py',
-#         'PASSWORD':'    ',
-#         'HOST':'127.0.0.1',
-#         'PORT':'5432',
-#     },
-
-# }
 
 DATABASES = {
     'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
