@@ -116,7 +116,7 @@ const AdminThematicsPage = () => {
                     </div>
                     <div>
                         <Label className="block text-sm font-medium text-gray-700 mb-2">Sous-sections</Label>
-                        {subSections.map((sub, index) => (
+                        {Array.isArray(subSections) && subSections.map((sub, index) => (
                         <div key={index} className="flex items-center space-x-2 mb-2">
                             <Input 
                                 type="text"
@@ -148,7 +148,7 @@ const AdminThematicsPage = () => {
       </motion.div>
 
       <div className="space-y-6">
-        {thematics.map((thematic, index) => (
+        {Array.isArray(thematics) && thematics.map((thematic, index) => (
           <motion.div
             key={thematic.id}
             initial={{ opacity: 0, x: -20 }}
@@ -174,7 +174,7 @@ const AdminThematicsPage = () => {
               </CardHeader>
               <CardContent>
                 <h4 className="font-semibold text-sm mb-2 text-gray-700">Sous-sections :</h4>
-                {thematic.subSections && thematic.subSections.length > 0 ? (
+                {Array.isArray(thematic.subSections) && thematic.subSections.length > 0 ? (
                   <ul className="list-disc list-inside pl-2 space-y-1 text-sm text-gray-600">
                     {thematic.subSections.map((sub, idx) => <li key={idx}>{sub}</li>)}
                   </ul>

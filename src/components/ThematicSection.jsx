@@ -44,7 +44,7 @@ const ThematicSection = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-4xl mx-auto"
         >
-          {categories.map((category) => (
+          {Array.isArray(categories) && categories.map((category) => (
             <Card key={category.id} className="mb-8">
               <CardHeader>
                 <CardTitle>{category.nom}</CardTitle>
@@ -52,7 +52,7 @@ const ThematicSection = () => {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
-                  {category.sujets.map((subject) => (
+                  {Array.isArray(category.sujets) && category.sujets.map((subject) => (
                     <li key={subject.id} className="p-4 border rounded-lg hover:border-blue-300 transition-colors">
                       <h4 className="text-lg font-medium">{subject.intitule}</h4>
                       <p className="text-gray-700">{subject.descriptif || "Aucune description disponible."}</p>

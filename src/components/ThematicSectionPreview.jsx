@@ -50,7 +50,7 @@ const ThematicSectionPreview = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {previewThematics.map((thematic, index) => (
+          {Array.isArray(previewThematics) && previewThematics.map((thematic, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
