@@ -21,7 +21,7 @@ DEBUG = False
 
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['vulgarisationdesdroits.onrender.com', 
+ALLOWED_HOSTS = ['vulgarisationdesdroits-b02f.onrender.com', 
                 '127.0.0.1',
                 'localhost']
 
