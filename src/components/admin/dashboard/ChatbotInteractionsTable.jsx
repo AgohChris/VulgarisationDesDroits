@@ -19,7 +19,7 @@ const ChatbotInteractionsTable = ({ toast }) => {
   useEffect(() => {
     const fetchChatSessions = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8080/api/chats/liste/'); // Remplacez par l'URL de votre API
+        const response = await axios.get('@https://vulgarisationdesdroits-b02f.onrender.com/api/chats/liste/'); // Remplacez par l'URL de votre API
         setChatbotQuestions(response.data); // Stocker les données dans l'état
       } catch (err) {
         setError('Erreur lors du chargement des interactions.');

@@ -82,7 +82,7 @@ const FichesPage = () => {
 		if (!fileUrl.startsWith('/media/')) {
 			fileUrl = `/media/ressources/${fileUrl}`;
 		}
-		return `${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8080'}${fileUrl}`;
+		return `${process.env.REACT_APP_API_BASE_URL || '@https://vulgarisationdesdroits-b02f.onrender.com'}${fileUrl}`;
 	};
 
 	const handleDownload = (fiche) => {

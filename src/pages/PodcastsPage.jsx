@@ -63,7 +63,7 @@ const PodcastsPage = () => {
 			if (!fileUrl.startsWith('/media/')) {
 				fileUrl = `/media/ressources/${fileUrl}`;
 			}
-			const audioUrl = `http://127.0.0.1:8080${fileUrl}`;
+			const audioUrl = `@https://vulgarisationdesdroits-b02f.onrender.com${fileUrl}`;
 			console.log('URL audio:', audioUrl); // Debug
 			// Ouvrir le lecteur audio du navigateur
 			window.open(audioUrl, '_blank');
@@ -82,7 +82,7 @@ const PodcastsPage = () => {
 			if (!fileUrl.startsWith('/media/')) {
 				fileUrl = `/media/ressources/${fileUrl}`;
 			}
-			const downloadUrl = `http://127.0.0.1:8080${fileUrl}`;
+			const downloadUrl = `@https://vulgarisationdesdroits-b02f.onrender.com${fileUrl}`;
 			console.log('URL de téléchargement:', downloadUrl); // Debug
 			
 			// Créer un lien de téléchargement

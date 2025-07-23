@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/structure-judiciaire'; // Remplacez par l'URL de votre backend Laravel
+const API_BASE_URL = '@https://vulgarisationdesdroits-vleq.onrender.com/api/structure-judiciaire'; // Remplacez par l'URL de votre backend Laravel
 
 export const fetchStructures = async () => {
   try {
@@ -44,7 +44,7 @@ export const deleteStructure = async (id) => {
 
 export const fetchJudicialSystemCount = async () => {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/structure-judiciaire/count`);
+    const response = await axios.get(`@https://vulgarisationdesdroits-vleq.onrender.com/api/structure-judiciaire/count`);
     return response.data.total; // Retourne uniquement le nombre
   } catch (error) {
     console.error("Erreur lors de la récupération du nombre de structures judiciaires :", error);

@@ -63,7 +63,7 @@ const GuidesPage = () => {
 			if (!fileUrl.startsWith('/media/')) {
 				fileUrl = `/media/ressources/${fileUrl}`;
 			}
-			const downloadUrl = `http://127.0.0.1:8080${fileUrl}`;
+			const downloadUrl = `@https://vulgarisationdesdroits-b02f.onrender.com${fileUrl}`;
 			console.log('URL de téléchargement:', downloadUrl); // Debug
 			window.open(downloadUrl, '_blank');
 		} else if (guide.link) {
@@ -82,7 +82,7 @@ const GuidesPage = () => {
 			if (!fileUrl.startsWith('/media/')) {
 				fileUrl = `/media/ressources/${fileUrl}`;
 			}
-			const previewUrl = `http://127.0.0.1:8080${fileUrl}`;
+			const previewUrl = `@https://vulgarisationdesdroits-b02f.onrender.com${fileUrl}`;
 			console.log('URL de prévisualisation:', previewUrl); // Debug
 			window.open(previewUrl, '_blank');
 		} else if (guide.link) {

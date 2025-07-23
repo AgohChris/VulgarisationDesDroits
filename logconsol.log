@@ -115,7 +115,7 @@ Ancestor with aria-hidden: <div.fixed left-[50%] top-[50%] z-50 grid w-full max-
 ressources.js:43 
             
             
-           PUT http://127.0.0.1:8080/api/ressources/42/update 400 (Bad Request)
+           PUT @https://vulgarisationdesdroits-b02f.onrender.com/api/ressources/42/update 400 (Bad Request)
 dispatchXhrRequest @ axios.js?v=2afe7670:1659
 xhr @ axios.js?v=2afe7670:1539
 dispatchRequest @ axios.js?v=2afe7670:2014
